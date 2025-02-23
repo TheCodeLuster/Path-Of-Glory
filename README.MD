@@ -14,8 +14,8 @@ The work presented here represents my personal research and development over tim
 
 While all code is released as open source, you are free to use it under the condition that you:
 
-- You must properly inform me of the intended use of my code.
-- You must include a link to this repository to credit the source of the code.
+- Must properly inform me of the intended use of my code.
+- Must include a link to this repository to credit the source of the code.
 
 ---
 
