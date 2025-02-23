@@ -1,0 +1,100 @@
+TLDR: // https://roadmap.sh/backend 
+---
+
++========+
+For oversimplification:
++========+
+
+Step 1:
+---
+Learn how does the Internet work (HTTP, DNS, IP/TCP, Hosting, Browsers).
+
+Step 2:
+---
+Pick up a language and learn syntax.
+
+Learn OOP.
+
+Practice (a lot)
+
+What do I mean by that:
+Basically, just write a lot of code, read it, debug it, fix it, and all over again.
+
+Step 3:
+---
+Learn VCS.
+
+Do not be a nerd, just take GitHub for Repo Hosting.
+
+and 
+
+Git for VCS.
+
+Learn only most used commands, you do not need to know everything.
+
+Step 4:
+---
+Learn a SQL Language and pick up some RDMS (better Postgre for Python `imho`).
+
+A plus will be to learn noSQL DMS (For Document DB: MongoDB; For Key-Value DB: Redis).
+Just have a general understanding of it and it will be enough.
+
+Step 5:
+---
+API.
+
+Learn how to create and integrate them.
+
+also Auth.
+
+Learn how to implement security (JWT, OAuth, Token Auth, OWASP)
+
+Also stuff like: REST, JSON APIs, SOAP, gRPC, GraphQL
+
+Step 6:
+---
+Learn small but key-important stuff:
+Caching, Web Security, Testing.
+
+Step 7:
+---
+Learn how to deploy your projects.
+
+Containerization and Virtualization.
+
+How to use Docker and Kubernetes.
+
+If you wanna more:
+Learn a scalability, Message Brokers, Search Engines, ...
+Just dive into DevOps
+
+Step 8:
+---
+
+Build projects and solve problems, build a portfolio, develop Soft Skills.
+Learn basic design patterns and principles.
+
+Interview tips:
+---
+Learn how to Solve Problems, that's your main thing as a programmer.
+
+It’s not just about writing classes, functions, or algorithms — those are just tools.
+
+You learn how to Solve Problems. That's where the real skill lies.
+
+Focus on that. Always be mindful of what you're doing.
+
+For practice on that:
+---
+
+Learn Data Structures and Algorithms (good source: // https://roadmap.sh/datastructures-and-algorithms)
+
+Where to practice: 
+// https://leetcode.com/
+// https://www.codewars.com/
+// https://www.codechef.com/
+
+Where to learn:
+// https://neetcode.io/roadmap
+// https://www.youtube.com/watch?v=ZA-tUyM_y7s&list=PLUl4u3cNGP63EdVPNLG3ToM6LaEUuStEY
+

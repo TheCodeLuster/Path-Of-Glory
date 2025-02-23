@@ -1,0 +1,63 @@
+Links to sources of information:
+
+// https://www.youtube.com/watch?v=N2bXEUSAiTI&t=1312s&ab_channel=georgehotzarchive
+// https://www.youtube.com/watch?v=KdZ4HF1SrFs&list=PLRDzFCPr95fK7tr47883DFUbm4GeOjjc0&ab_channel=%D0%A2%D0%B8%D0%BC%D0%BE%D1%84%D0%B5%D0%B9%D0%A5%D0%B8%D1%80%D1%8C%D1%8F%D0%BD%D0%BE%D0%B2
+// https://docs.python.org/3/tutorial/index.html 
+// https://cs50.harvard.edu/x/2025/ (year may vary)
+// https://roadmap.sh/ 
+
+
+Topics to acknowledge:
+
++========+
+CS general representation:
++========+
+
+Program: 
+---
+Input -> Computation -> Output 
+
+Languages:
+---
+C --> Haskell (functional spectrum)
+C --> Python (ease of use spectrum) 
+
+ASM x86-64
+
+Revolutionary Programming (in the 90's beginning of OOP)
+---
+C --> C++ 
+
+ <-- The goal is to make everything as an object (to improve programming productivity) -->
+
+But the real thing that improved programming productivity is GC:
+Garbage Collector (GC) 
+
+What is computer: 
+---
+Processor (CPU) that runs stream of instructions 
+RAM (instructions + Data)
+
+What does a Program has:
+text = Instructions
+bss = Static Data
+stack = local vars (control flow)
+heap = malloc
+
+"""
+A brief overview how does a stack work:
+"""
+
+void a() {
+    int variable_on_the_stack;
+    // return by popping off the stack
+}
+
+void b() {
+}
+
+int main(void) {
+    a(); // pushes the return location to the stack
+
+    b();
+}
