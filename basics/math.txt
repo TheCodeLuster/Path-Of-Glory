@@ -1,0 +1,33 @@
++========+
+Math for CS
++========+
+
+1. Abstract algebra
+2. Logic algebra (also known as Discrete math)
+3. Theory of computation
+4. Complexity theory
+5. Graph theory
+6. Logic in general
+
++========+
+Math for AI/ML
++========+
+
+1. Calculus
+2. Probability theory
+3. Decision theory
+4. Linear algebra
+5. Game theory
+6. Logic in general
+
++========+
+Math for Cyber security
++========+
+
+1. Number theory
+2. Abstract algebra
+3. Linear algebra
+4. Coding theory
+5. Complexity theory
+6. Graph theory
+

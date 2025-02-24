@@ -10,7 +10,7 @@ Links to sources of information:
 Topics to acknowledge:
 
 +========+
-CS general representation:
+CS (Computer Science) general representation:
 +========+
 
 Program: 
@@ -39,6 +39,7 @@ Processor (CPU) that runs stream of instructions
 RAM (instructions + Data)
 
 What does a Program has:
+---
 text = Instructions
 bss = Static Data
 stack = local vars (control flow)
@@ -61,3 +62,33 @@ int main(void) {
 
     b();
 }
+
+ML (Machine Learning) Engineer:
+---
+
+1. Download a paper 
+2. Implement it
+3. Keep doing this until you have skills
+
+
+You basically can use `Program` paradigm for anything (i.e.):
+---
+
+Hacking:
+---
+
+Input -> System -> Output
+
+etc ...
+
+Funnels:
+---
+
+Sell Cars
+
+1. 10,000: Top of the funnel (advertising to many)
+1%
+2. 100: Visit the dealership
+5% 
+3. 5: Buy cars 
+
