@@ -31,3 +31,6 @@ Math for Cyber security
 5. Complexity theory
 6. Graph theory
 
+Most important (above all):
+---
+Constructivist Mathematics
