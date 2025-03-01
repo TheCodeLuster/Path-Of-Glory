@@ -3,6 +3,9 @@
 def foo(a):
     return a + 3
 
+# def bar():
+#     pass
+
 def baz(foo):
     b = 7
     return foo(b)
