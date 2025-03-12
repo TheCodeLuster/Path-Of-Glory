@@ -1,6 +1,10 @@
-import glob
+import glob # for working with files 
 import cv2
 
+# create a folder 'images' in the same directory as this file(code)
+# could be jpeg or any
+# also you can modify it with buil-in func any()
+# to access any extension 
 path = glob.glob('images/*.jpeg')
 imgs = []
 
