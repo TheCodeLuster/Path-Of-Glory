@@ -1,12 +1,12 @@
 ### quick intro to roadmap (Python) ###
 
 # books i am currently using(re-reading): 
-#   grokking algorithms, 
-#   head first python (Paul Barry)
+#   Grokking Algorithms, 
+#   Head First Python (Paul Barry)
 
 # worth checking: https://docs.python.org/3.12/tutorial/index.html
 
-# off docs: https://docs.python.org/3/
+# official docs: https://docs.python.org/3/
 # learn history of language
 
 """
@@ -102,3 +102,55 @@ def foo(): # do not care about this
 (1 + 3) * 2 # => 8
 
 # boolean 
+True # => true
+False # => false
+
+# negative with not
+not True # => false
+not False# => true
+
+# boolean operators
+True and False # => False
+False or True # => True
+## basically it is just boolean algebra
+## True and False is actually 1 and 0
+True + True # => 2
+True * 8 # => 8
+False - 5 # => -5
+
+# comparison operators 
+0 == False # => True
+2 > True # => True
+2 == True # => False
+-5 != False # => True
+
+# None, 0 and empty strings/lists/dicts/tuples/sets...
+# are all evaluate to False
+# all other values are True
+bool(0) # => False
+bool("") # => False
+bool([]) # => False
+bool({}) # => False
+bool(()) # => False
+bool(set()) # => False
+bool(4) # => True
+bool(-5) # => True
+
+# using boolean logical operators on ints casts them to bolleans
+# for evaluation, but their non-cast values is returned.
+# do not mix up with bool(ints) and bitwise and/or (&, |)
+bool(0) # => False
+bool(2) # => True
+0 and 2 # => 0
+bool(-7) # => True
+bool(2) # => True
+-5 or 0 # => -5
+
+# equality is ==
+1 == 1 # => True
+1 == 2 # => False
+
+# inequality is !=
+1 != 1 # => False
+1 != 2 # => True
+
