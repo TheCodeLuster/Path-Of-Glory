@@ -154,3 +154,27 @@ bool(2) # => True
 1 != 1 # => False
 1 != 2 # => True
 
+# more comparisons
+1 < 10 # => True 
+...
+
+# value in a range (with and)
+1 < 2 and 2 < 3 # => True
+2 < 3 and 3 < 2 # => False
+
+# OR
+1 < 2 < 3 # => True
+2 < 3 < 2 # => False
+
+# is vs ==
+# is - checks if 2 vars refer to the same object
+# == - checks of the objects pointed to have same values
+
+p1 = [1, 2, 3, 4] # => point p1 at a new list 
+p2 = p1 # => point p2 at what p1 is pointing to
+p2 is p1 # => True, p2 and p1 refer to the same object
+p2 == p1 # => True, p1's and p2's objects are equal 
+p2 = [1, 2, 3, 4] # => point p2 at a new list
+p2 is p1 # => False, p1 and p2 do not refer to the same object
+
+# we can create a string with "" or ''
