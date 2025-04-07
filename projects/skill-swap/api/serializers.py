@@ -1,5 +1,5 @@
 from rest_framework import serializers 
-from rest_framework_jwt.settings import api_settings 
+from rest_framework_simplejwt.tokens import RefreshToken
 from .models import *
 
 # User Serializer
@@ -16,12 +16,9 @@ class UserSerializerWithToken(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     def get_token(self, obj):
-        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-
-        payload = jwt_payload_handler(obj)
-        token = jwt_encode_handler(payload)
-        return token
+        # Generate token using Simple JWT
+        refresh = RefreshToken.for_user(obj)
+        return str(refresh.access_token)
 
     def create(self, validated_data):
         password = validated_data.pop('password', None)
@@ -34,7 +31,7 @@ class UserSerializerWithToken(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'token', 'email', 'username', 'password', 'first_name', 'last_name', 
-                 'phone_number', 'role')
+                  'phone_number', 'role')
 
 
 # User Registration Serializer
@@ -48,11 +45,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
     
     def get_token(self, obj):
-        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-        payload = jwt_payload_handler(obj)
-        token = jwt_encode_handler(payload)
-        return token
+        refresh = RefreshToken.for_user(obj)
+        return str(refresh.access_token)
     
     def create(self, validated_data):
         user = User.objects.create(
@@ -290,4 +284,3 @@ class UserProfileCreateSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = ['user', 'date_of_birth', 'occupation', 'skill_owned', 'experience',
                   'location', 'work_link', 'description', 'achievements', 'profile_image']
-        
