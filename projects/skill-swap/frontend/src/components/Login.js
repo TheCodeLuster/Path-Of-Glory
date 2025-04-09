@@ -1,82 +1,103 @@
-// src/components/Login.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Image, Text, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login({ navigation }) {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [rememberPassword, setRememberPassword] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // Track password visibility
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = () => {
-    fetch('http://127.0.0.1:8000/api/token/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    })
-      .then(res => res.json())
-      .then(async data => {
-        if (data.access) {
-          await AsyncStorage.setItem('accessToken', data.access);
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const accessToken = await AsyncStorage.getItem('accessToken');
+        if (accessToken) {
           navigation.replace('Home');
-        } else {
-          setError('Invalid credentials');
         }
-      })
-      .catch(() => setError('Network error'));
+      } catch (err) {
+        console.log('Error checking login status:', err);
+      }
+    };
+
+    checkLoginStatus();
+  }, [navigation]);
+
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('https://daa5-46-119-171-85.ngrok-free.app/api/token/', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      if (data.access) {
+        console.log('Access Token:', data.access);
+        await AsyncStorage.setItem('accessToken', data.access);
+        console.log('Token stored successfully');
+        navigation.replace('Home');
+      } else {
+        console.log('Login Error Response:', data);
+        const errorMessage = data.detail ? String(data.detail) : 'Invalid credentials';
+        setError(errorMessage);
+      }
+    } catch (err) {
+      console.log('Fetch Error:', err);
+      setError('Network error: ' + err.message);
+    }
   };
 
-  // Toggle password visibility
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
+  React.useLayoutEffect(() => {
+    navigation.setOptions({ headerShown: false });
+  }, [navigation]);
+
   return (
     <View style={styles.container}>
-      {/* Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>←</Text>
       </TouchableOpacity>
 
-      {/* Welcome Text */}
-      <Text style={styles.welcomeTitle}>Hi ,Welcome Back! 👋</Text>
-      <Text style={styles.welcomeSubtitle}>Hello again , You have been missed!</Text>
+      <Text style={styles.welcomeTitle}>Hi, Welcome Back! 👋</Text>
+      <Text style={styles.welcomeSubtitle}>Hello again, You have been missed!</Text>
 
-      {/* Email Input */}
-      <Text style={styles.inputLabel}>Email</Text>
+      <Text style={styles.inputLabel}>Username</Text>
       <TextInput
-        placeholder="Email, phone & username"
-        value={email}
-        onChangeText={setEmail}
+        placeholder="Username"
+        value={username}
+        onChangeText={setUsername}
         style={styles.input}
         autoCapitalize="none"
+        placeholderTextColor="#999"
       />
 
-      {/* Password Input */}
       <Text style={styles.inputLabel}>Password</Text>
       <View style={styles.passwordContainer}>
         <TextInput
           placeholder="Password"
           value={password}
           onChangeText={setPassword}
-          secureTextEntry={!showPassword} // Toggle based on showPassword state
+          secureTextEntry={!showPassword}
           style={styles.passwordInput}
+          placeholderTextColor="#999"
         />
-        <TouchableOpacity 
-          style={styles.eyeIcon}
-          onPress={togglePasswordVisibility} // Add the toggle function
-        >
+        <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
           <Text>{showPassword ? '🐵' : '🙈'}</Text>
-          {/* You can use different eye icons to represent open/closed states */}
         </TouchableOpacity>
       </View>
 
-      {/* Remember Password & Forgot Password */}
       <View style={styles.passwordOptionsRow}>
         <View style={styles.checkboxContainer}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.checkbox}
             onPress={() => setRememberPassword(!rememberPassword)}
           >
@@ -89,40 +110,43 @@ export default function Login({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* Error Message */}
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+      {error ? (
+        <Text style={styles.error}>
+          {typeof error === 'string' ? error : JSON.stringify(error)}
+        </Text>
+      ) : null}
 
-      {/* Login Button */}
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText}>LOGIN</Text>
+        <Text style={styles.loginButtonText}>Login</Text>
       </TouchableOpacity>
 
-      {/* Divider */}
       <View style={styles.dividerContainer}>
         <View style={styles.divider} />
         <Text style={styles.dividerText}>or</Text>
         <View style={styles.divider} />
       </View>
 
-      {/* Social Login */}
       <View style={styles.socialContainer}>
         <TouchableOpacity style={styles.socialButton}>
-                      <Image style={styles.socialButton}
-                        source={require('../../images/google.png')}
-                        resizeMode="contain"
-                      />
+          <Image
+            style={styles.socialButton}
+            source={require('../../images/google.png')}
+            resizeMode="contain"
+          />
         </TouchableOpacity>
         <TouchableOpacity style={styles.socialButton}>
-                      <Image style={styles.socialButton}
-                        source={require('../../images/facebook.png')}
-                        resizeMode="contain"
-                      />
+          <Image
+            style={styles.socialButton}
+            source={require('../../images/facebook.png')}
+            resizeMode="contain"
+          />
         </TouchableOpacity>
         <TouchableOpacity style={styles.socialButton}>
-                      <Image style={styles.socialButton}
-                        source={require('../../images/apple.png')}
-                        resizeMode="contain"
-                      />
+          <Image
+            style={styles.socialButton}
+            source={require('../../images/apple.png')}
+            resizeMode="contain"
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -130,17 +154,19 @@ export default function Login({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  // Your existing styles remain the same
-  container: { 
-    flex: 1, 
-    padding: 20, 
+  container: {
+    flex: 1,
+    padding: 20,
     backgroundColor: '#FFF7D4',
+    paddingTop: 50,
   },
   backButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'white',
+    borderWidth: 2,
+    borderColor: '#000000',
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 20,
@@ -153,31 +179,35 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 8,
+    fontFamily: 'Raleway-bold',
   },
   welcomeSubtitle: {
     fontSize: 16,
     color: '#555',
     marginBottom: 30,
+    fontFamily: 'Raleway-regular',
   },
   inputLabel: {
     fontSize: 16,
     fontWeight: '500',
     marginBottom: 8,
     color: '#333',
+    fontFamily: 'Raleway-regular',
   },
-  input: { 
-    borderWidth: 1, 
-    borderColor: '#ccc',
-    padding: 15, 
+  input: {
+    borderWidth: 2,
+    borderColor: '#000000',
+    padding: 15,
     marginBottom: 20,
     borderRadius: 8,
     backgroundColor: '#FFF9E0',
     fontSize: 16,
+    fontFamily: 'Raleway-regular',
   },
   passwordContainer: {
     flexDirection: 'row',
-    borderWidth: 1,
-    borderColor: '#ccc',
+    borderWidth: 2,
+    borderColor: '#000000',
     borderRadius: 8,
     marginBottom: 15,
     backgroundColor: '#FFF9E0',
@@ -186,6 +216,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 15,
     fontSize: 16,
+    fontFamily: 'Raleway-regular',
   },
   eyeIcon: {
     padding: 15,
@@ -219,10 +250,12 @@ const styles = StyleSheet.create({
   rememberText: {
     fontSize: 14,
     color: '#555',
+    fontFamily: 'Raleway-Regular',
   },
   forgotText: {
     fontSize: 14,
-    color: 'red',
+    color: 'black',
+    fontFamily: 'Raleway-Regular',
   },
   error: {
     color: 'red',
@@ -231,14 +264,16 @@ const styles = StyleSheet.create({
   loginButton: {
     backgroundColor: '#3B3227',
     padding: 16,
-    borderRadius: 8,
+    borderRadius: 60,
     alignItems: 'center',
     marginBottom: 20,
   },
   loginButtonText: {
     color: 'white',
-    fontWeight: '600',
-    fontSize: 16,
+    fontWeight: '400',
+    fontSize: 18,
+    fontFamily: 'Raleway-regular',
+    letterSpacing: 1,
   },
   dividerContainer: {
     flexDirection: 'row',
@@ -252,7 +287,9 @@ const styles = StyleSheet.create({
   },
   dividerText: {
     paddingHorizontal: 10,
-    color: '#555',
+    color: '#222',
+    fontSize: 20,
+    height: 32,
   },
   socialContainer: {
     flexDirection: 'row',
@@ -265,8 +302,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 19,
-  },
-  socialIcon: {
-    fontSize: 20,
   },
 });

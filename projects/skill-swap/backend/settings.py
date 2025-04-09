@@ -21,7 +21,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'api.apps.ApiConfig'
+    'api.apps.ApiConfig',
+    'rest_framework_simplejwt',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +54,18 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',        # web
     'http://127.0.0.1:19000',       # Expo CLI default
+    'http://127.0.0.1:8000',
+    'http://localhost:8000'
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:19006",
+    "http://127.0.0.1:19006",
+    'http://localhost:3000',        # web
+    'http://127.0.0.1:19000',       # Expo CLI default
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+    'https://daa5-46-119-171-85.ngrok-free.app'
 ]
 
 SIMPLE_JWT = {

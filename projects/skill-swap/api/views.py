@@ -1,5 +1,5 @@
 from rest_framework import permissions, status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import *
@@ -7,8 +7,10 @@ from django.http import JsonResponse, HttpResponse, HttpResponseNotAllowed
 from rest_framework .parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework .views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def current_user(request):
     serializer = UserSerializer(request.user)
     return Response(serializer.data)
@@ -34,6 +36,27 @@ def create_user(request):
             return JsonResponse(response_data, status=201)
         return JsonResponse(serializer.errors, status=400)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def personal_info(request):
+    if request.method == 'POST':
+        if UserProfile.objects.filter(user=request.user).exists():
+            return Response({'error': 'UserProfile already exists for this user'}, status=status.HTTP_400_BAD_REQUEST)
+
+        data = request.data
+        data['user'] = request.user.id
+        serializer = UserProfileSerializer(data=data)
+        if serializer.is_valid():
+            try:
+                user_profile = serializer.save()
+                response_data = serializer.data
+                response_data['UserId'] = user_profile.id
+                return Response(response_data, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'error': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 @csrf_exempt
 def check_login(request, email):
     try:
@@ -44,7 +67,8 @@ def check_login(request, email):
        serializer = UserSerializer(user, many=True)
        return JsonResponse(serializer.data, safe=False)
 
-@csrf_exempt
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_user(request, id):
     try:
         user = User.objects.get(pk=id)
@@ -68,3 +92,12 @@ def get_user(request, id):
         return JsonResponse(serializer.errors, status=400)
     else:
         return HttpResponseNotAllowed(['GET', 'PUT', 'PATCH'])
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def check_user(request):
+    email = request.user.email  
+    check = User.objects.filter(email=email)
+    serializer = UserSerializer(check, many=True)
+    return Response(serializer.data)
