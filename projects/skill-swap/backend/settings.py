@@ -65,7 +65,6 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:19000',       # Expo CLI default
     'http://127.0.0.1:8000',
     'http://localhost:8000',
-    'https://daa5-46-119-171-85.ngrok-free.app'
 ]
 
 SIMPLE_JWT = {

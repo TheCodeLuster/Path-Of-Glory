@@ -36,7 +36,7 @@ export default function PersonalDetails1({ navigation, route }) {
       try {
         const accessToken = await AsyncStorage.getItem('accessToken');
         const response = await fetch(
-          `https://daa5-46-119-171-85.ngrok-free.app/api/userprofile/${userData?.id}/`,
+          `https://dbc1-46-119-171-85.ngrok-free.app/api/userprofile/${userData?.id}/`,
           {
             method: 'GET',
             headers: {
@@ -68,9 +68,9 @@ export default function PersonalDetails1({ navigation, route }) {
     try {
       const accessToken = await AsyncStorage.getItem('accessToken');
       let method = 'POST';
-      let url = 'https://daa5-46-119-171-85.ngrok-free.app/api/userprofile/';
+      let url = 'https://dbc1-46-119-171-85.ngrok-free.app/api/userprofile/';
       const checkResponse = await fetch(
-        `https://daa5-46-119-171-85.ngrok-free.app/api/userprofile/${userData?.id}/`,
+        `https://dbc1-46-119-171-85.ngrok-free.app/api/userprofile/${userData?.id}/`,
         {
           method: 'GET',
           headers: {
@@ -82,7 +82,7 @@ export default function PersonalDetails1({ navigation, route }) {
 
       if (checkResponse.status === 200) {
         method = 'PATCH';
-        url = `https://daa5-46-119-171-85.ngrok-free.app/api/userprofile/${userData?.id}/`;
+        url = `https://dbc1-46-119-171-85.ngrok-free.app/api/userprofile/${userData?.id}/`;
       }
 
       const response = await fetch(url, {

@@ -1,32 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Image, Text, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Login({ navigation }) {
+export default function Login({ navigation, setToken }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [rememberPassword, setRememberPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const accessToken = await AsyncStorage.getItem('accessToken');
-        if (accessToken) {
-          navigation.replace('Home');
-        }
-      } catch (err) {
-        console.log('Error checking login status:', err);
-      }
-    };
-
-    checkLoginStatus();
-  }, [navigation]);
-
   const handleLogin = async () => {
     try {
-      const response = await fetch('https://daa5-46-119-171-85.ngrok-free.app/api/token/', { 
+      const response = await fetch('https://dbc1-46-119-171-85.ngrok-free.app/api/token/', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -41,7 +26,8 @@ export default function Login({ navigation }) {
         console.log('Access Token:', data.access);
         await AsyncStorage.setItem('accessToken', data.access);
         console.log('Token stored successfully');
-        navigation.replace('Home');
+        // Update the token state in App.js to trigger navigation to Drawer
+        setToken(data.access);
       } else {
         console.log('Login Error Response:', data);
         const errorMessage = data.detail ? String(data.detail) : 'Invalid credentials';
@@ -61,9 +47,14 @@ export default function Login({ navigation }) {
     navigation.setOptions({ headerShown: false });
   }, [navigation]);
 
+  // Handle back button press to always navigate to Signup
+  const handleBackPress = () => {
+    navigation.navigate('Signup');
+  };
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+      <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
         <Text style={styles.backButtonText}>←</Text>
       </TouchableOpacity>
 

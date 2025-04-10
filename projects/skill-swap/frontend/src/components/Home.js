@@ -1,31 +1,31 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-// Placeholder icons (replace with actual assets)
 const menuIcon = require('../../images/menu.png');
 const searchIcon = require('../../images/search.png');
 const premiumIcon = require('../../images/premium.png');
 const heartIcon = require('../../images/like.png');
 const shareIcon = require('../../images/chat1.png');
 const plusIcon = require('../../images/chat2.png');
-const bookmarkIcon = require('../../images/home.png');
-const swapImage = require('../../images/swap.png'); // Replace with actual image
-const courseImage = require('../../images/logo.png'); // Replace with actual image
+const swapImage = require('../../images/swap.png');
+const courseImage = require('../../images/logo.png');
+const homeIcon = require('../../images/home.png');
+const starIcon = require('../../images/star.png');
+const userIcon = require('../../images/user.png');
+const avatar1 = require('../../images/avatar1.png');
+const avatar2 = require('../../images/avatar2.png');
+const avatar3 = require('../../images/avatar3.png');
 
 export default function Home({ setIsLoggedIn }) {
   const navigation = useNavigation();
 
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem('accessToken');
-      setIsLoggedIn(false);
-      console.log('Logged out successfully');
-    } catch (error) {
-      console.log('Logout Error:', error);
-    }
-  };
+  // Set navigation options to ensure no header/status bar interference
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: false, // Ensure no navigation header is shown
+    });
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -68,6 +68,12 @@ export default function Home({ setIsLoggedIn }) {
               <Text style={styles.statText}>1k+</Text>
             </View>
           </View>
+          <View style={styles.avatarsContainer}>
+            <Image source={avatar1} style={[styles.avatar, { zIndex: 3 }]} />
+            <Image source={avatar2} style={[styles.avatar, { marginLeft: -10, zIndex: 2 }]} />
+            <Image source={avatar3} style={[styles.avatar, { marginLeft: -10, zIndex: 1 }]} />
+            <Text style={styles.avatarsText}>100+</Text>
+          </View>
           <TouchableOpacity>
             <Text style={styles.seeMore}>See more</Text>
           </TouchableOpacity>
@@ -82,22 +88,39 @@ export default function Home({ setIsLoggedIn }) {
             </TouchableOpacity>
           </View>
           <View style={styles.courseCard}>
-            <Image source={courseImage} style={styles.courseImage} />
-            <Text style={styles.courseTitle}>UX DESIGNER IN 3 MONTHS</Text>
+            <View style={styles.courseImageContainer}>
+              <Image source={courseImage} style={styles.courseImage} />
+            </View>
             <View style={styles.courseStats}>
               <Text style={styles.courseStat}>21,390 students</Text>
               <Text style={styles.courseStat}>10h 26m</Text>
             </View>
             <Text style={styles.courseDescription}>
-              Learn UI/UX Design, Figma and Prototyping
+              Learn UI/UX Design,
+            </Text>
+            <Text style={styles.courseDescription}>
+              Figma and Prototyping
             </Text>
             <Text style={styles.courseAuthor}>— Brad Frost</Text>
-            <TouchableOpacity style={styles.bookmark}>
-              <Image source={bookmarkIcon} style={styles.bookmarkIcon} />
-            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
+
+      {/* Bottom Navigation Bar */}
+      <View style={styles.bottomBar}>
+        <TouchableOpacity>
+          <Image source={homeIcon} style={styles.bottomIcon} />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Image source={starIcon} style={styles.bottomIcon} />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Image source={swapImage} style={styles.bottomIcon} />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Image source={userIcon} style={styles.bottomIcon} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -111,20 +134,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
-    backgroundColor: '#FFF7D4',
+    padding: 20,
+    paddingTop: 50,
+    backgroundColor: '#B89653',
   },
   topBarRight: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   icon: {
     width: 24,
     height: 24,
-    marginLeft: 10,
+    marginLeft: 15,
   },
   content: {
     flex: 1,
-    paddingHorizontal: 15,
+    paddingHorizontal: 20,
+    paddingBottom: 80,
   },
   title: {
     fontSize: 24,
@@ -153,7 +179,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   stats: {
-    flexDirection: 'row',
+    flexDirection: "row",
     justifyContent: 'space-between',
     marginBottom: 15,
   },
@@ -171,6 +197,26 @@ const styles = StyleSheet.create({
     fontFamily: 'Raleway-regular',
     color: '#1A1A1A',
   },
+  avatarsContainer: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    borderWidth: 2,
+    borderColor: '#FFF',
+  },
+  avatarsText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+    marginLeft: 5,
+  },
   seeMore: {
     fontSize: 14,
     fontFamily: 'Raleway-regular',
@@ -178,7 +224,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 10,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -196,20 +242,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 15,
     padding: 15,
+    borderWidth: 2,
+    borderColor: '#FFE27F',
     elevation: 2,
+  },
+  courseImageContainer: {
+    backgroundColor: '#FFD95A',
+    borderRadius: 10,
+    overflow: 'hidden',
+    marginBottom: 10,
   },
   courseImage: {
     width: '100%',
     height: 150,
     borderRadius: 10,
-    marginBottom: 10,
-  },
-  courseTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    fontFamily: 'Raleway-bold',
-    color: '#1A1A1A',
-    marginBottom: 5,
   },
   courseStats: {
     flexDirection: 'row',
@@ -223,22 +269,30 @@ const styles = StyleSheet.create({
   },
   courseDescription: {
     fontSize: 14,
-    fontFamily: 'Raleway-regular',
+    fontFamily: 'Raleway-bold',
     color: '#1A1A1A',
-    marginBottom: 5,
+    lineHeight: 16, // Reduced line height to bring the two lines closer
   },
   courseAuthor: {
     fontSize: 12,
     fontFamily: 'Raleway-regular',
     color: '#666',
+    marginTop: 2, // Reduced margin to match the tight spacing in the image
   },
-  bookmark: {
+  bottomBar: {
     position: 'absolute',
-    top: 20,
-    right: 20,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 70,
+    backgroundColor: '#B89653',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
   },
-  bookmarkIcon: {
-    width: 20,
-    height: 20,
+  bottomIcon: {
+    width: 24,
+    height: 24,
+    tintColor: '#1A1A1A',
   },
 });

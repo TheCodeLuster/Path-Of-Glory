@@ -24,7 +24,7 @@ export default function Signup({ navigation }) {
   const [error, setError] = useState('');
 
   const handleSignup = () => {
-    fetch('https://daa5-46-119-171-85.ngrok-free.app/api/user/', {
+    fetch('https://dbc1-46-119-171-85.ngrok-free.app/api/user/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
