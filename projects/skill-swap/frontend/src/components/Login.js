@@ -1,6 +1,8 @@
+// src/components/Login.js
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Image, Text, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BASE_URL } from '../../App';
 
 export default function Login({ navigation, setToken }) {
   const [username, setUsername] = useState('');
@@ -11,33 +13,31 @@ export default function Login({ navigation, setToken }) {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('https://dbc1-46-119-171-85.ngrok-free.app/api/token/', { 
+      console.log('Login attempt with:', { username, password });  // Log credentials
+      const response = await fetch(`${BASE_URL}/api/token/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
-      }
-
+  
       const data = await response.json();
+      console.log('Server response:', data);  // Log server response
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status} - ${data.detail || 'Unknown error'}`);
+      }
+  
+      // Handle successful login (store token, etc.)
       if (data.access) {
-        console.log('Access Token:', data.access);
         await AsyncStorage.setItem('accessToken', data.access);
-        console.log('Token stored successfully');
-        // Update the token state in App.js to trigger navigation to Drawer
         setToken(data.access);
-      } else {
-        console.log('Login Error Response:', data);
-        const errorMessage = data.detail ? String(data.detail) : 'Invalid credentials';
-        setError(errorMessage);
       }
     } catch (err) {
-      console.log('Fetch Error:', err);
+      console.error('Fetch Error:', err);
       setError('Network error: ' + err.message);
     }
   };
+  
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -47,7 +47,6 @@ export default function Login({ navigation, setToken }) {
     navigation.setOptions({ headerShown: false });
   }, [navigation]);
 
-  // Handle back button press to always navigate to Signup
   const handleBackPress = () => {
     navigation.navigate('Signup');
   };

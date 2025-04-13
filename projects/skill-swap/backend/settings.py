@@ -12,6 +12,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['.ngrok-free.app', 'localhost', '127.0.0.1']
 
+AUTH_USER_MODEL = 'api.User'
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -131,3 +133,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

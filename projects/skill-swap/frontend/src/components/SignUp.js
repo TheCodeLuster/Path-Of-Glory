@@ -11,32 +11,57 @@ import {
   Platform,
   StatusBar,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BASE_URL } from '../../App'; 
 
-export default function Signup({ navigation }) {
+export default function Signup({ navigation, setToken }) {
   const [form, setForm] = useState({
     email: '',
     username: '',
     password: '',
     first_name: '',
     last_name: '',
-    phone_number: '',
+    phone_number: ''
   });
   const [error, setError] = useState('');
 
-  const handleSignup = () => {
-    fetch('https://dbc1-46-119-171-85.ngrok-free.app/api/user/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    })
-      .then(res => {
-        if (res.status === 201) return res.json();
-        throw new Error('Signup failed');
-      })
-      .then(data => {
-        navigation.replace('Dateofbirth'); 
-      })
-      .catch(() => setError('Signup error'));
+  const handleSignup = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/users/`, { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+
+      const responseData = await response.json();
+
+      if (response.status !== 201) {
+        console.log('Signup error response:', responseData);
+        throw new Error('Signup failed: ' + JSON.stringify(responseData));
+      }
+
+      const accessToken = responseData.token;
+      const userId = responseData.id;
+
+      if (!accessToken || !userId) {
+        throw new Error('Token or user ID not returned from server');
+      }
+
+      // Store token in AsyncStorage
+      await AsyncStorage.setItem('accessToken', accessToken);
+      
+      // Navigate to DateOfBirth first
+      navigation.replace('DateOfBirth', {
+        userData: { id: userId, ...form },
+        token: accessToken,
+      });
+
+      // Update token state after navigation
+      setToken(accessToken);
+    } catch (err) {
+      console.error('Signup error:', err);
+      setError('Signup error: ' + err.message);
+    }
   };
 
   const fields = [

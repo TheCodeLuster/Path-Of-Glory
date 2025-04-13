@@ -10,18 +10,29 @@ import {
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { BASE_URL } from '../../App'; 
 
 export default function DateOfBirth({ navigation, route }) {
-  const { userData } = route.params || {};
+  const { userData, token } = route.params || {};
   const [selectedDate, setSelectedDate] = useState('2003-05-06');
   const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({}); // State to hold form data
 
   useEffect(() => {
     const fetchUserProfile = async () => {
+      if (!userData?.id) {
+        console.log('No user ID provided, skipping fetchUserProfile');
+        return;
+      }
+
       try {
-        const accessToken = await AsyncStorage.getItem('accessToken');
+        const accessToken = token || (await AsyncStorage.getItem('accessToken'));
+        if (!accessToken) {
+          throw new Error('No access token available');
+        }
+
         const response = await fetch(
-          `https://dbc1-46-119-171-85.ngrok-free.app/api/userprofile/${userData?.id}/`,
+          `${BASE_URL}/userprofile/${userData.id}/`, 
           {
             method: 'GET',
             headers: {
@@ -35,23 +46,29 @@ export default function DateOfBirth({ navigation, route }) {
           const profileData = await response.json();
           if (profileData.date_of_birth) {
             setSelectedDate(profileData.date_of_birth);
+            setFormData({ ...formData, date_of_birth: profileData.date_of_birth });
           }
+        } else {
+          console.log('No existing UserProfile found, will create a new one.');
         }
       } catch (error) {
-        console.log('No existing UserProfile found, will create a new one.');
+        console.error('Error fetching UserProfile:', error);
       }
     };
 
-    if (userData?.id) {
-      fetchUserProfile();
-    }
-  }, [userData]);
+    fetchUserProfile();
+  }, [userData, token]);
 
   const handleDayPress = (day) => {
     setSelectedDate(day.dateString);
   };
 
   const handleContinue = async () => {
+    if (!userData?.id) {
+      Alert.alert('Error', 'User ID is missing. Please sign up again.');
+      return;
+    }
+
     setIsLoading(true);
 
     const date = new Date(selectedDate);
@@ -64,11 +81,15 @@ export default function DateOfBirth({ navigation, route }) {
     }
 
     try {
-      const accessToken = await AsyncStorage.getItem('accessToken');
+      const accessToken = token || (await AsyncStorage.getItem('accessToken'));
+      if (!accessToken) {
+        throw new Error('No access token available');
+      }
+
       let method = 'POST';
-      let url = 'https://dbc1-46-119-171-85.ngrok-free.app/api/userprofile/';
+      let url = `${BASE_URL}/userprofile/`;  
       const checkResponse = await fetch(
-        `https://dbc1-46-119-171-85.ngrok-free.app/api/userprofile/${userData?.id}/`,
+        `${BASE_URL}/userprofile/${userData.id}/`, 
         {
           method: 'GET',
           headers: {
@@ -80,7 +101,7 @@ export default function DateOfBirth({ navigation, route }) {
 
       if (checkResponse.status === 200) {
         method = 'PATCH';
-        url = `https://daa5-46-119-171-85.ngrok-free.app/api/userprofile/${userData?.id}/`;
+        url = `${BASE_URL}/userprofile/${userData.id}/`; 
       }
 
       const response = await fetch(url, {
@@ -92,7 +113,7 @@ export default function DateOfBirth({ navigation, route }) {
         body: JSON.stringify(
           method === 'POST'
             ? {
-                user: userData?.id,
+                user: userData.id,
                 date_of_birth: selectedDate,
                 occupation: 'Teacher',
                 skill_owned: 'Teaching',
@@ -101,20 +122,31 @@ export default function DateOfBirth({ navigation, route }) {
                 work_link: 'https://example.com',
                 description: 'New user',
                 achievements: 'None',
-                profile_image: 'https://example.com/image.jpg',
               }
             : { date_of_birth: selectedDate }
         ),
       });
 
       if (response.status === 201 || response.status === 200) {
-        navigation.replace('PersonalDetails1');
+        // Update formData with date_of_birth
+        const updatedFormData = { ...formData, date_of_birth: selectedDate };
+        // Navigate to PersonalDetails1 with updated formData
+        navigation.navigate('PersonalDetails1', {
+          userData,
+          token,
+          formData: updatedFormData,
+        });
       } else {
         const errorData = await response.json();
-        Alert.alert('Error', errorData.message || 'Failed to save date of birth');
+        console.error('Error saving date of birth:', errorData);
+        const errorMessage = Object.entries(errorData)
+          .map(([field, errors]) => `${field}: ${errors.join(', ')}`)
+          .join('\n');
+        Alert.alert('Error', errorMessage || 'Failed to save date of birth');
       }
     } catch (error) {
-      Alert.alert('Error', 'Network error occurred');
+      console.error('Network error:', error);
+      Alert.alert('Error', 'Network error occurred: ' + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -128,7 +160,6 @@ export default function DateOfBirth({ navigation, route }) {
     <>
       <StatusBar barStyle="dark-content" backgroundColor="#FFF7D4" />
       <View style={styles.container}>
-        {/* Title and Description */}
         <View style={styles.textContainer}>
           <Text style={styles.title}>Date of Birth</Text>
           <Text style={styles.description}>
@@ -136,7 +167,6 @@ export default function DateOfBirth({ navigation, route }) {
           </Text>
         </View>
 
-        {/* Calendar */}
         <View style={styles.datePickerContainer}>
           <Calendar
             current={'2003-05-06'}
@@ -158,17 +188,16 @@ export default function DateOfBirth({ navigation, route }) {
               textDayFontFamily: 'Raleway-Regular',
               textMonthFontFamily: 'Raleway-Bold',
               textDayHeaderFontFamily: 'Raleway-Regular',
-              textDayFontSize: 22, // Larger day numbers
-              textMonthFontSize: 26, // Larger month/year
-              textDayHeaderFontSize: 18, // Larger day headers
+              textDayFontSize: 22,
+              textMonthFontSize: 26,
+              textDayHeaderFontSize: 18,
             }}
             style={styles.calendar}
             maxDate={new Date().toISOString().split('T')[0]}
-            enableSwipeMonths={true} // Enable month navigation
+            enableSwipeMonths={true}
           />
         </View>
 
-        {/* Navigation Buttons */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.backButton}
@@ -195,12 +224,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 110, // Adjust this to move the text higher or lower
+    paddingTop: 110,
     backgroundColor: '#FFF7D4',
   },
   textContainer: {
-    alignItems: 'flex-start', // Left-align text
-    marginBottom: 50, // Space between description and calendar
+    alignItems: 'flex-start',
+    marginBottom: 50,
   },
   title: {
     fontSize: 33,
@@ -231,8 +260,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    marginTop: 'auto', // Push buttons to the bottom
-    paddingBottom: 110, // Adjust this to position buttons lower
+    marginTop: 'auto',
+    paddingBottom: 110,
   },
   backButton: {
     width: 40,

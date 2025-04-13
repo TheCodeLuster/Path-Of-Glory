@@ -1,6 +1,9 @@
+# serializers.py
 from rest_framework import serializers 
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import *
+from django.core.files.storage import default_storage
+from django.conf import settings
 
 # User Serializer
 class UserSerializer(serializers.ModelSerializer):
@@ -9,14 +12,12 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'email', 'username', 'first_name', 'last_name', 'phone_number', 
                   'role', 'created_at', 'updated_at']
 
-
 # User Serializer with Token
 class UserSerializerWithToken(serializers.ModelSerializer):
     token = serializers.SerializerMethodField()
     password = serializers.CharField(write_only=True)
 
     def get_token(self, obj):
-        # Generate token using Simple JWT
         refresh = RefreshToken.for_user(obj)
         return str(refresh.access_token)
 
@@ -32,7 +33,6 @@ class UserSerializerWithToken(serializers.ModelSerializer):
         model = User
         fields = ('id', 'token', 'email', 'username', 'password', 'first_name', 'last_name', 
                   'phone_number', 'role')
-
 
 # User Registration Serializer
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -57,21 +57,58 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             phone_number=validated_data.get('phone_number', ''),
             role=validated_data.get('role', User.Role.USER)
         )
-        user.password = validated_data['password']  # Will be hashed in the model's save method
+        user.set_password(validated_data['password']) 
+        user.is_active = True
         user.save()
         return user
 
-
-# User Profile Serializer
+# UserProfile Serializer
 class UserProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())  # Accept user ID
+    profile_image = serializers.FileField(write_only=True, required=False)  # Optional
+
     class Meta:
         model = UserProfile
         fields = ['user', 'date_of_birth', 'occupation', 'skill_owned', 'experience',
                   'location', 'work_link', 'description', 'achievements', 'profile_image',
                   'updated_at']
+        extra_kwargs = {
+            'occupation': {'required': False},  # Make optional
+            'skill_owned': {'required': False},
+            'experience': {'required': False},
+            'location': {'required': False},
+            'work_link': {'required': False},
+            'description': {'required': False},
+            'achievements': {'required': False},
+            'date_of_birth': {'required': False},  # Allow partial updates
+        }
 
+    def create(self, validated_data):
+        profile_image = validated_data.pop('profile_image', None)
+        user_profile = UserProfile(**validated_data)
+
+        if profile_image:
+            file_path = default_storage.save(
+                f'profiles/{validated_data["user"].id}/{profile_image.name}', profile_image
+            )
+            user_profile.profile_image = f"{settings.MEDIA_URL}{file_path}"
+
+        user_profile.save()
+        return user_profile
+
+    def update(self, instance, validated_data):
+        profile_image = validated_data.pop('profile_image', None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        if profile_image:
+            file_path = default_storage.save(
+                f'profiles/{instance.user.id}/{profile_image.name}', profile_image
+            )
+            instance.profile_image = f"{settings.MEDIA_URL}{file_path}"
+
+        instance.save()
+        return instance
 
 # Skill Serializer
 class SkillSerializer(serializers.ModelSerializer):

@@ -8,11 +8,12 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     path('current_user/', current_user),
     path('users/', UserList.as_view()),
-    path('users/<int:id>/', get_user, name='users'),
-    path('user/', create_user),
-    path('check/', check_user),
+    path('user/<int:id>/', get_user,),
+    path('create_user/', create_user),
+    path('userprofile/', UserProfileView.as_view()),
+    path('userprofile/<int:id>/', UserProfileView.as_view()),
+    path('check_user/', check_user),
     path('login/<str:email>/', check_login),
-    path('userprofile/', personal_info),
     # JWT endpoints
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

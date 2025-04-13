@@ -1,3 +1,4 @@
+// App.js
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -10,13 +11,17 @@ import LoginScreen from './src/components/Login';
 import SignupScreen from './src/components/SignUp';
 import HomeScreen from './src/components/Home';
 import JoinNow from './src/components/JoinNow';
-import Dateofbirth from './src/components/Dateofbirth';
+import DateOfBirth from './src/components/Dateofbirth';
+import PersonalDetails1 from './src/components/PersonalDetails1'; // Add PersonalDetails1
+import PersonalDetails2 from './src/components/PersonalDetails2'; // Add PersonalDetails2
+import PersonalDetails3 from './src/components/PersonalDetails3'; // Add PersonalDetails3
 import DrawerMenu from './src/components/DrawerMenu';
+
+export const BASE_URL = 'https://c0a9-46-119-171-85.ngrok-free.app';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
-// Drawer Navigator for authenticated screens
 function DrawerNavigator({ token, setToken, navigation }) {
   return (
     <Drawer.Navigator
@@ -29,18 +34,15 @@ function DrawerNavigator({ token, setToken, navigation }) {
       >
         {(props) => <HomeScreen {...props} token={token} setIsLoggedIn={() => setToken(null)} />}
       </Drawer.Screen>
-      {/* Add other authenticated screens here if needed */}
     </Drawer.Navigator>
   );
 }
 
-// Main App
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(null);
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
-  // Load fonts
   useEffect(() => {
     async function loadFonts() {
       await Font.loadAsync({
@@ -52,7 +54,6 @@ export default function App() {
     loadFonts();
   }, []);
 
-  // Check for token
   useEffect(() => {
     const checkToken = async () => {
       try {
@@ -67,8 +68,18 @@ export default function App() {
     checkToken();
   }, []);
 
-  // Create a navigation ref to access the navigator outside of components
   const navigationRef = React.useRef(null);
+
+  // Reset navigation stack after token is loaded
+  useEffect(() => {
+    if (!loading && navigationRef.current) {
+      const initialRoute = token ? 'Drawer' : 'JoinNow';
+      navigationRef.current.reset({
+        index: 0,
+        routes: [{ name: initialRoute }],
+      });
+    }
+  }, [loading, token]);
 
   if (loading || !fontsLoaded) {
     return (
@@ -82,21 +93,28 @@ export default function App() {
     <>
       <StatusBar barStyle="dark-content" backgroundColor="#FFF7D4" />
       <NavigationContainer ref={navigationRef}>
-        <Stack.Navigator>
-          {token == null ? (
-            <>
-              <Stack.Screen name="JoinNow" component={JoinNow} options={{ headerShown: false }} />
-              <Stack.Screen name="Login" options={{ headerShown: false }}>
-                {(props) => <LoginScreen {...props} setToken={setToken} />}
-              </Stack.Screen>
-              <Stack.Screen name="Signup" component={SignupScreen} options={{ headerShown: false }} />
-              <Stack.Screen name="Dateofbirth" component={Dateofbirth} options={{ headerShown: false }} />
-            </>
-          ) : (
-            <Stack.Screen name="Drawer" options={{ headerShown: false }}>
-              {(props) => <DrawerNavigator {...props} token={token} setToken={setToken} navigation={navigationRef.current} />}
-            </Stack.Screen>
-          )}
+        <Stack.Navigator initialRouteName="JoinNow">
+          <Stack.Screen name="JoinNow" component={JoinNow} options={{ headerShown: false }} />
+          <Stack.Screen name="Login" options={{ headerShown: false }}>
+            {(props) => <LoginScreen {...props} setToken={setToken} />}
+          </Stack.Screen>
+          <Stack.Screen name="Signup" options={{ headerShown: false }}>
+            {(props) => <SignupScreen {...props} setToken={setToken} />}
+          </Stack.Screen>
+          <Stack.Screen name="DateOfBirth" component={DateOfBirth} options={{ headerShown: false }} />
+          <Stack.Screen name="PersonalDetails1" component={PersonalDetails1} options={{ headerShown: false }} />
+          <Stack.Screen name="PersonalDetails2" component={PersonalDetails2} options={{ headerShown: false }} />
+          <Stack.Screen name="PersonalDetails3" component={PersonalDetails3} options={{ headerShown: false }} />
+          <Stack.Screen name="Drawer" options={{ headerShown: false }}>
+            {(props) => (
+              <DrawerNavigator
+                {...props}
+                token={token}
+                setToken={setToken}
+                navigation={navigationRef.current}
+              />
+            )}
+          </Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>
     </>

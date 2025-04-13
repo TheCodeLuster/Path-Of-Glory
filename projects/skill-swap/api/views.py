@@ -1,12 +1,13 @@
+# views.py
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import *
 from django.http import JsonResponse, HttpResponse, HttpResponseNotAllowed
-from rest_framework .parsers import JSONParser
+from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework .views import APIView
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
 @api_view(['GET'])
@@ -16,7 +17,7 @@ def current_user(request):
     return Response(serializer.data)
 
 class UserList(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = ()  # No authentication required for signup
     def post(self, request, format=None):
         serializer = UserSerializerWithToken(data=request.data)
         if serializer.is_valid():
@@ -28,7 +29,7 @@ class UserList(APIView):
 def create_user(request):
     if request.method == 'POST':
         data = JSONParser().parse(request)
-        serializer = UserSerializer(data=data)
+        serializer = UserRegistrationSerializer(data=data)
         if serializer.is_valid():
             user = serializer.save()
             response_data = serializer.data
@@ -36,26 +37,48 @@ def create_user(request):
             return JsonResponse(response_data, status=201)
         return JsonResponse(serializer.errors, status=400)
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def personal_info(request):
-    if request.method == 'POST':
+# View to handle UserProfile creation, retrieval, and updates
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id=None):
+        try:
+            user_profile = UserProfile.objects.get(user_id=id)
+            serializer = UserProfileSerializer(user_profile)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'UserProfile not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request):
+        # Check if a UserProfile already exists for the user
         if UserProfile.objects.filter(user=request.user).exists():
             return Response({'error': 'UserProfile already exists for this user'}, status=status.HTTP_400_BAD_REQUEST)
 
-        data = request.data
-        data['user'] = request.user.id
-        serializer = UserProfileSerializer(data=data)
+        data = request.data.copy()
+        data['user'] = request.user.id  # Set the user field to the authenticated user's ID
+
+        serializer = UserProfileSerializer(data=data, context={'request': request})
         if serializer.is_valid():
             try:
                 user_profile = serializer.save()
                 response_data = serializer.data
-                response_data['UserId'] = user_profile.id
+                response_data['UserId'] = user_profile.user.id
                 return Response(response_data, status=status.HTTP_201_CREATED)
             except Exception as e:
                 return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    return Response({'error': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def patch(self, request, id=None):
+        try:
+            user_profile = UserProfile.objects.get(user_id=id, user=request.user)
+        except UserProfile.DoesNotExist:
+            return Response({'error': 'UserProfile not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserProfileSerializer(user_profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @csrf_exempt
 def check_login(request, email):
@@ -64,8 +87,8 @@ def check_login(request, email):
     except:
         return HttpResponse(status=404)
     if request.method == 'GET':
-       serializer = UserSerializer(user, many=True)
-       return JsonResponse(serializer.data, safe=False)
+        serializer = UserSerializer(user, many=True)
+        return JsonResponse(serializer.data, safe=False)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -75,8 +98,8 @@ def get_user(request, id):
     except:
         return HttpResponse(status=404)
     if request.method == 'GET':
-       serializer = UserSerializer(user)
-       return JsonResponse(serializer.data)
+        serializer = UserSerializer(user)
+        return JsonResponse(serializer.data)
     elif request.method in ['PUT', 'PATCH']:
         data = JSONParser().parse(request)
         try:
@@ -92,7 +115,6 @@ def get_user(request, id):
         return JsonResponse(serializer.errors, status=400)
     else:
         return HttpResponseNotAllowed(['GET', 'PUT', 'PATCH'])
-
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
