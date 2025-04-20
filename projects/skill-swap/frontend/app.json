@@ -1,5 +1,45 @@
 {
   "plugins": [
     "expo-font"
-  ]
+  ],
+  "expo": {
+    "name": "SkillSwap",
+    "slug": "skillswap",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/img/icon.png",
+    "splash": {
+      "image": "./assets/img/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.potential.skillswap",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We need your location to provide better services.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "config": {
+        "googleMapsApiKey": "AIzaSyBWEV7FlyJ8IOrN-EiBwxfWNf_53fbn5XY"
+      }
+    },
+    "android": {
+      "package": "com.potential.skillswap",
+      "config": {
+        "googleMapsApiKey": "AIzaSyBWEV7FlyJ8IOrN-EiBwxfWNf_53fbn5XY"
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "981f672f-46cb-42eb-a04a-e3fbeff31b0b"
+      }
+    }
+  }
 }

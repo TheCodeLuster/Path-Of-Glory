@@ -12,9 +12,9 @@ import SignupScreen from './src/components/SignUp';
 import HomeScreen from './src/components/Home';
 import JoinNow from './src/components/JoinNow';
 import DateOfBirth from './src/components/Dateofbirth';
-import PersonalDetails1 from './src/components/PersonalDetails1'; // Add PersonalDetails1
-import PersonalDetails2 from './src/components/PersonalDetails2'; // Add PersonalDetails2
-import PersonalDetails3 from './src/components/PersonalDetails3'; // Add PersonalDetails3
+import PersonalDetails1 from './src/components/PersonalDetails1'; 
+import PersonalDetails2 from './src/components/PersonalDetails2'; 
+import PersonalDetails3 from './src/components/PersonalDetails3';
 import DrawerMenu from './src/components/DrawerMenu';
 
 export const BASE_URL = 'https://c0a9-46-119-171-85.ngrok-free.app';
@@ -79,7 +79,7 @@ export default function App() {
         routes: [{ name: initialRoute }],
       });
     }
-  }, [loading, token]);
+  }, [loading]);
 
   if (loading || !fontsLoaded) {
     return (

@@ -1,4 +1,4 @@
-// src/components/Signup.js
+// src/components/SignUp.js
 import React, { useState } from 'react';
 import {
   View,

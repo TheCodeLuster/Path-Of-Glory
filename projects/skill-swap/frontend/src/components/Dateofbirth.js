@@ -1,4 +1,4 @@
-// src/components/DateOfBirth.js
+// src/components/Dateofbirth.js
 import React, { useState, useEffect } from 'react';
 import {
   View,

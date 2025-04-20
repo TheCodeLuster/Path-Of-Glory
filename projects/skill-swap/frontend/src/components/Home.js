@@ -1,3 +1,4 @@
+// src/components/Home.js
 import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, StatusBar } from 'react-native';
 import { useNavigation } from '@react-navigation/native';

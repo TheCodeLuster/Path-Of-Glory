@@ -1,3 +1,4 @@
+// src/components/DrawerMenu.js
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
