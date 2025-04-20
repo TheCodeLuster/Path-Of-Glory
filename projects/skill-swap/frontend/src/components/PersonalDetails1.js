@@ -4,7 +4,7 @@ import MapView, { Marker } from 'react-native-maps';
 import Geocoder from 'react-native-geocoding';
 
 // Initialize Geocoder with your Google Maps API key
-Geocoder.init('AIzaSyBWEV7FlyJ8IOrN-EiBwxfWNf_53fbn5XY');
+Geocoder.init('fake_api_key');
 
 export default function PersonalDetails1({ navigation, route }) {
   const { formData = {}, userData, token } = route.params || {};
