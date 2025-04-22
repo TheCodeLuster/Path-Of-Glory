@@ -1,0 +1,25 @@
+# ─── ENV FILES ──────────────────────────────
+**/.env
+
+# ─── PYTHON / Django ────────────────────────
+*.py[cod]
+__pycache__/
+db.sqlite3
+media/
+*.log
+
+# ─── Node / JS / React Native ───────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+android/
+ios/
+*.keystore
+
+# ─── macOS ──────────────────────────────────
+.DS_Store
+
+# ─── IDEA / VSCode ──────────────────────────
+.vscode/
+.idea/

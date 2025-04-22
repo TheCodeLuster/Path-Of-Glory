@@ -4,22 +4,53 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import *
 from django.core.files.storage import default_storage
 from django.conf import settings
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.contrib.auth import authenticate
 
-# User Serializer
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    username_field = 'email'
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(required=True, write_only=True)
+
+    def validate(self, attrs):
+        credentials = {
+            'email': attrs.get('email'),
+            'password': attrs.get('password')
+        }
+
+        if credentials['email'] and credentials['password']:
+            user = authenticate(
+                request=self.context.get('request'),
+                email=credentials['email'].lower(),
+                password=credentials['password']
+            )
+
+            if user:
+                if not user.is_active:
+                    raise serializers.ValidationError('No active account found with the given credentials')
+                self.user = user
+                return super().validate(attrs)
+            else:
+                raise serializers.ValidationError('No active account found with the given credentials')
+        else:
+            raise serializers.ValidationError('Must include "email" and "password".')
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'username', 'first_name', 'last_name', 'phone_number', 
                   'role', 'created_at', 'updated_at']
 
-# User Serializer with Token
 class UserSerializerWithToken(serializers.ModelSerializer):
     token = serializers.SerializerMethodField()
     password = serializers.CharField(write_only=True)
 
     def get_token(self, obj):
         refresh = RefreshToken.for_user(obj)
-        return str(refresh.access_token)
+        return {
+            'access': str(refresh.access_token),
+            'refresh': str(refresh)
+        }
 
     def create(self, validated_data):
         password = validated_data.pop('password', None)
@@ -34,7 +65,6 @@ class UserSerializerWithToken(serializers.ModelSerializer):
         fields = ('id', 'token', 'email', 'username', 'password', 'first_name', 'last_name', 
                   'phone_number', 'role')
 
-# User Registration Serializer
 class UserRegistrationSerializer(serializers.ModelSerializer):
     token = serializers.SerializerMethodField()
     
@@ -46,7 +76,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     
     def get_token(self, obj):
         refresh = RefreshToken.for_user(obj)
-        return str(refresh.access_token)
+        return {
+            'access': str(refresh.access_token),
+            'refresh': str(refresh)
+        }
     
     def create(self, validated_data):
         user = User.objects.create(
@@ -57,15 +90,14 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             phone_number=validated_data.get('phone_number', ''),
             role=validated_data.get('role', User.Role.USER)
         )
-        user.set_password(validated_data['password']) 
+        user.set_password(validated_data['password'])
         user.is_active = True
         user.save()
         return user
 
-# UserProfile Serializer
 class UserProfileSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())  # Accept user ID
-    profile_image = serializers.FileField(write_only=True, required=False)  # Optional
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    profile_image = serializers.FileField(write_only=True, required=False)
 
     class Meta:
         model = UserProfile
@@ -73,14 +105,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
                   'location', 'work_link', 'description', 'achievements', 'profile_image',
                   'updated_at']
         extra_kwargs = {
-            'occupation': {'required': False},  # Make optional
+            'occupation': {'required': False},
             'skill_owned': {'required': False},
             'experience': {'required': False},
             'location': {'required': False},
             'work_link': {'required': False},
             'description': {'required': False},
             'achievements': {'required': False},
-            'date_of_birth': {'required': False},  # Allow partial updates
+            'date_of_birth': {'required': False},
         }
 
     def create(self, validated_data):

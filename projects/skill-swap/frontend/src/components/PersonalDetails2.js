@@ -1,7 +1,8 @@
+// src/components/PersonalDetails2.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 
-export default function PersonalDetails2({ navigation, route }) {
+export default function PersonalDetails2({ navigation, route, setIsSignupFlow }) {
   const { formData = {}, userData, token } = route.params || {};
   const [workLink, setWorkLink] = useState(formData.work_link || '');
   const [description, setDescription] = useState(formData.description || '');
@@ -26,6 +27,7 @@ export default function PersonalDetails2({ navigation, route }) {
         userData,
         token,
         formData: updatedFormData,
+        setIsSignupFlow,
       });
     }
   };
@@ -48,7 +50,6 @@ export default function PersonalDetails2({ navigation, route }) {
             Provide your personal details to enhance your Skill Swap experience and connect with like-minded individuals
           </Text>
 
-          {/* Work Link */}
           <View style={styles.formField}>
             <Text style={styles.label}>
               Work Link<Text style={styles.required}>*</Text>
@@ -62,15 +63,14 @@ export default function PersonalDetails2({ navigation, route }) {
             {errors.workLink && <Text style={styles.error}>{errors.workLink}</Text>}
           </View>
 
-          {/* Description */}
-            <View style={styles.formField}>
-              <Text style={styles.label}>
+          <View style={styles.formField}>
+            <Text style={styles.label}>
               Description<Text style={styles.required}>*</Text>
             </Text>
             <TextInput
               style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
               placeholder="Add something about yourself..."
-              placeholderTextColor="#666" // Explicitly set the color
+              placeholderTextColor="#666"
               value={description}
               onChangeText={setDescription}
               multiline
@@ -79,7 +79,6 @@ export default function PersonalDetails2({ navigation, route }) {
             {errors.description && <Text style={styles.error}>{errors.description}</Text>}
           </View>
 
-          {/* Achievements */}
           <View style={styles.formField}>
             <Text style={styles.label}>
               Achievements<Text style={styles.required}>*</Text>
@@ -87,7 +86,7 @@ export default function PersonalDetails2({ navigation, route }) {
             <TextInput
               style={[styles.input, { height: 110, textAlignVertical: 'top' }]}
               placeholder="Add your achievements..."
-              placeholderTextColor="#666" // Explicitly set the color
+              placeholderTextColor="#666"
               value={achievements}
               onChangeText={setAchievements}
               multiline
@@ -95,7 +94,6 @@ export default function PersonalDetails2({ navigation, route }) {
             {errors.achievements && <Text style={styles.error}>{errors.achievements}</Text>}
           </View>
 
-          {/* Navigation */}
           <View style={styles.navigation}>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
               <Text style={styles.backButtonText}>←</Text>

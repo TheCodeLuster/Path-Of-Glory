@@ -1,10 +1,11 @@
+// src/components/PersonalDetails3.js
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { BASE_URL } from '../../App';
 
 export default function PersonalDetails3({ navigation, route }) {
-  const { formData = {}, userData, token } = route.params || {};
+  const { formData = {}, userData, token, setIsSignupFlow } = route.params || {};
   const [profileImage, setProfileImage] = useState(formData.profileImage || null);
   const [errors, setErrors] = useState('');
 
@@ -22,24 +23,17 @@ export default function PersonalDetails3({ navigation, route }) {
     });
 
     if (!result.canceled) {
-      const selectedImageUri = result.assets[0].uri;
-      console.log('Selected image URI:', selectedImageUri); // Debug: Log the selected URI
-      setProfileImage(selectedImageUri);
+      setProfileImage(result.assets[0].uri);
       setErrors('');
-    } else {
-      console.log('Image selection canceled'); // Debug: Log if the selection was canceled
     }
   };
 
   const validate = () => {
-    console.log('Validating, profileImage:', profileImage); // Debug: Log the profileImage state
     if (!profileImage) {
       setErrors('Please upload a profile image');
-      console.log('Validation failed: No profile image'); // Debug: Log validation failure
       return false;
     }
     setErrors('');
-    console.log('Validation passed'); // Debug: Log validation success
     return true;
   };
 
@@ -60,7 +54,7 @@ export default function PersonalDetails3({ navigation, route }) {
     formDataToSend.append('achievements', formData.achievements || '');
 
     if (profileImage) {
-      console.log('Appending profile image to FormData:', profileImage); // Debug: Log the image URI
+      console.log('Appending profile image to FormData:', profileImage);
       formDataToSend.append('profile_image', {
         uri: profileImage,
         name: 'profile_image.jpg',
@@ -71,6 +65,8 @@ export default function PersonalDetails3({ navigation, route }) {
     try {
       let method = 'POST';
       let url = `${BASE_URL}/userprofile/`;
+      console.log('Checking if profile exists for user ID:', userData.id);
+      console.log('Token being sent for GET request:', token);
       const checkResponse = await fetch(`${BASE_URL}/userprofile/${userData.id}/`, {
         method: 'GET',
         headers: {
@@ -79,33 +75,89 @@ export default function PersonalDetails3({ navigation, route }) {
         },
       });
 
+      console.log('Check response status:', checkResponse.status);
+      const checkContentType = checkResponse.headers.get('content-type');
+      if (!checkContentType || !checkContentType.includes('application/json')) {
+        const checkText = await checkResponse.text();
+        console.log('Check request non-JSON response:', checkText);
+        throw new Error(`Expected JSON for check request, but received: ${checkText.slice(0, 100)}... (Status: ${checkResponse.status})`);
+      }
+
+      const checkData = await checkResponse.json();
+      console.log('Check response data:', checkData);
+
       if (checkResponse.status === 200) {
         method = 'PATCH';
         url = `${BASE_URL}/userprofile/${userData.id}/`;
+        console.log('Profile exists, switching to PATCH');
+      } else if (checkResponse.status === 404) {
+        console.log('Profile does not exist, proceeding with POST');
+      } else {
+        throw new Error(`Profile check failed with status ${checkResponse.status}: ${JSON.stringify(checkData)}`);
       }
 
-      console.log('Submitting FormData to:', url, 'with method:', method); // Debug: Log the API request details
+      console.log('Token being sent for submit request:', token);
+      console.log('Submitting FormData to:', url, 'with method:', method);
       const response = await fetch(url, {
         method: method,
         headers: {
           Authorization: `Bearer ${token}`,
-          // Do not set 'Content-Type' header; let fetch handle it for FormData
         },
         body: formDataToSend,
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response headers:', [...response.headers.entries()]);
+
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.log('Non-JSON response:', text);
+        throw new Error(`Expected JSON, but received: ${text.slice(0, 100)}... (Status: ${response.status})`);
+      }
+
+      const data = await response.json();
+
       if (response.status === 201 || response.status === 200) {
-        const data = await response.json();
         console.log('Profile submitted successfully:', data);
+        setIsSignupFlow(false);
         navigation.navigate('Drawer');
+      } else if (response.status === 400 && data.error === 'UserProfile already exists for this user') {
+        console.log('Profile already exists, but GET request failed to find it. Switching to PATCH and retrying...');
+        method = 'PATCH';
+        url = `${BASE_URL}/userprofile/${userData.id}/`;
+        const retryResponse = await fetch(url, {
+          method: method,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formDataToSend,
+        });
+
+        console.log('Retry response status:', retryResponse.status);
+        const retryContentType = retryResponse.headers.get('content-type');
+        if (!retryContentType || !retryContentType.includes('application/json')) {
+          const retryText = await retryResponse.text();
+          console.log('Retry non-JSON response:', retryText);
+          throw new Error(`Expected JSON on retry, but received: ${retryText.slice(0, 100)}... (Status: ${retryResponse.status})`);
+        }
+
+        const retryData = await retryResponse.json();
+        if (retryResponse.status === 200) {
+          console.log('Profile updated successfully on retry:', retryData);
+          setIsSignupFlow(false);
+          navigation.navigate('Drawer');
+        } else {
+          console.error('Retry failed:', retryData);
+          setErrors(`Failed to update profile on retry: ${JSON.stringify(retryData)} (Status: ${retryResponse.status})`);
+        }
       } else {
-        const errorData = await response.json();
-        console.error('Error submitting profile:', errorData);
-        setErrors('Failed to submit profile. Please try again.');
+        console.error('Error submitting profile:', data);
+        setErrors(`Failed to submit profile: ${JSON.stringify(data)} (Status: ${response.status})`);
       }
     } catch (error) {
       console.error('Network error submitting profile:', error);
-      setErrors('Network error occurred. Please try again.');
+      setErrors(`Network error: ${error.message}`);
     }
   };
 

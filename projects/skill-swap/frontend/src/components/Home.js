@@ -97,10 +97,10 @@ export default function Home({ setIsLoggedIn }) {
               <Text style={styles.courseStat}>10h 26m</Text>
             </View>
             <Text style={styles.courseDescription}>
-              Learn UI/UX Design,
+              Learn UI/UX Design, Figma and
             </Text>
             <Text style={styles.courseDescription}>
-              Figma and Prototyping
+              Prototyping
             </Text>
             <Text style={styles.courseAuthor}>— Brad Frost</Text>
           </View>
@@ -130,41 +130,49 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFF7D4',
+    alignItems: 'center',
   },
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
-    paddingTop: 50,
+    paddingHorizontal: 20,
+    paddingTop: 55,
+    paddingBottom: 20,
     backgroundColor: '#B89653',
+    width: '100%',
   },
   topBarRight: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   icon: {
-    width: 24,
-    height: 24,
-    marginLeft: 15,
+    width: 27,
+    height: 27,
+    marginLeft: 10,
   },
   content: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingBottom: 80,
+    paddingBottom: 100,
+    width: '100%',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     fontFamily: 'Raleway-bold',
     color: '#1A1A1A',
-    marginBottom: 20,
+    marginBottom: 30,
+    marginTop: 30,
+    textAlign: 'left',
   },
   card: {
     backgroundColor: '#FFE082',
     borderRadius: 15,
     padding: 20,
     marginBottom: 20,
+    width: '100%',
+    alignSelf: 'left',
   },
   cardTitle: {
     fontSize: 18,
@@ -172,15 +180,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Raleway-bold',
     color: '#1A1A1A',
     marginBottom: 5,
+    textAlign: 'left',
   },
   cardSubtitle: {
     fontSize: 14,
     fontFamily: 'Raleway-regular',
     color: '#1A1A1A',
     marginBottom: 15,
+    textAlign: 'left',
   },
   stats: {
-    flexDirection: "row",
+    flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 15,
   },
@@ -210,7 +220,7 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 15,
     borderWidth: 2,
-    borderColor: '#FFF',
+    borderColor: '#000',
   },
   avatarsText: {
     fontSize: 14,
@@ -223,9 +233,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Raleway-regular',
     color: '#1A1A1A',
     textDecorationLine: 'underline',
+    textAlign: 'left',
   },
   section: {
     marginBottom: 10,
+    width: '100%',
+    alignSelf: 'left',
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -234,10 +247,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: 'bold',
     fontFamily: 'Raleway-bold',
     color: '#1A1A1A',
+    textAlign: 'left',
   },
   courseCard: {
     backgroundColor: '#FFFFFF',
@@ -246,22 +260,29 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#FFE27F',
     elevation: 2,
+    width: '100%',
+    height: '67%',
+    alignSelf: 'left',
+    borderWidth: 4
   },
   courseImageContainer: {
     backgroundColor: '#FFD95A',
     borderRadius: 10,
     overflow: 'hidden',
+    marginHorizontal: -20, // Extend the yellow container horizontally
+    marginTop: -15, // Extend the yellow container at the top
     marginBottom: 10,
+    padding: 10, // Add padding to keep the image inside the white container
   },
   courseImage: {
     width: '100%',
-    height: 150,
+    height: 160,
     borderRadius: 10,
   },
   courseStats: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 5,
+    marginBottom: 10
   },
   courseStat: {
     fontSize: 12,
@@ -269,31 +290,34 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   courseDescription: {
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: 'Raleway-bold',
     color: '#1A1A1A',
-    lineHeight: 16, // Reduced line height to bring the two lines closer
+    lineHeight: 17,
+    textAlign: 'left',
+    letterSpacing: 1.1
   },
   courseAuthor: {
     fontSize: 12,
     fontFamily: 'Raleway-regular',
     color: '#666',
-    marginTop: 2, // Reduced margin to match the tight spacing in the image
+    marginTop: 10,
+    textAlign: 'left',
   },
   bottomBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: 70,
+    height: 81,
     backgroundColor: '#B89653',
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
   },
   bottomIcon: {
-    width: 24,
-    height: 24,
+    width: 27,
+    height: 27,
     tintColor: '#1A1A1A',
   },
 });

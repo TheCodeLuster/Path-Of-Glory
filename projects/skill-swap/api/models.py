@@ -1,10 +1,10 @@
+# models.py
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.contrib.auth.hashers import make_password
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import TextChoices
 
-# Custom manager for User model
 class UserManager(BaseUserManager):
     def create_user(self, username, email, password=None, **extra_fields):
         if not email:
@@ -13,7 +13,7 @@ class UserManager(BaseUserManager):
             raise ValueError('The Username field must be set')
         email = self.normalize_email(email)
         user = self.model(username=username, email=email, **extra_fields)
-        user.set_password(password)  # Properly hash the password
+        user.set_password(password)
         user.save(using=self._db)
         return user
 
@@ -30,7 +30,6 @@ class UserManager(BaseUserManager):
 
         return self.create_user(username, email, password, **extra_fields)
 
-# Custom User model
 class User(AbstractBaseUser, PermissionsMixin):
     class Role(TextChoices):
         USER = 'User', 'User'
@@ -48,20 +47,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    # Required fields for authentication
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
     objects = UserManager()
 
-    USERNAME_FIELD = 'username'  # Field used for login
-    REQUIRED_FIELDS = ['email']  # Fields prompted for during createsuperuser
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
 
     def __str__(self):
         return self.username
 
-# --- 2. UserProfiles ---
 class Occupation(TextChoices):
     ACCOUNTANT = 'Accountant', 'Accountant'
     ACTOR = 'Actor', 'Actor'

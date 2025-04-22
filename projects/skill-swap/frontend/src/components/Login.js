@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '../../App';
 
 export default function Login({ navigation, setToken }) {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [rememberPassword, setRememberPassword] = useState(false);
@@ -13,31 +13,31 @@ export default function Login({ navigation, setToken }) {
 
   const handleLogin = async () => {
     try {
-      console.log('Login attempt with:', { username, password });  // Log credentials
+      console.log('Login attempt with:', { email, password });
       const response = await fetch(`${BASE_URL}/api/token/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
       });
-  
+
       const data = await response.json();
-      console.log('Server response:', data);  // Log server response
-  
+      console.log('Server response:', data);
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status} - ${data.detail || 'Unknown error'}`);
       }
-  
-      // Handle successful login (store token, etc.)
+
       if (data.access) {
         await AsyncStorage.setItem('accessToken', data.access);
+        await AsyncStorage.setItem('refreshToken', data.refresh);
         setToken(data.access);
+        navigation.navigate('Drawer');
       }
     } catch (err) {
       console.error('Fetch Error:', err);
       setError('Network error: ' + err.message);
     }
   };
-  
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -60,11 +60,11 @@ export default function Login({ navigation, setToken }) {
       <Text style={styles.welcomeTitle}>Hi, Welcome Back! 👋</Text>
       <Text style={styles.welcomeSubtitle}>Hello again, You have been missed!</Text>
 
-      <Text style={styles.inputLabel}>Username</Text>
+      <Text style={styles.inputLabel}>Email</Text>
       <TextInput
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
         style={styles.input}
         autoCapitalize="none"
         placeholderTextColor="#999"

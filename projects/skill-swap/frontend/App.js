@@ -12,12 +12,12 @@ import SignupScreen from './src/components/SignUp';
 import HomeScreen from './src/components/Home';
 import JoinNow from './src/components/JoinNow';
 import DateOfBirth from './src/components/Dateofbirth';
-import PersonalDetails1 from './src/components/PersonalDetails1'; 
-import PersonalDetails2 from './src/components/PersonalDetails2'; 
+import PersonalDetails1 from './src/components/PersonalDetails1';
+import PersonalDetails2 from './src/components/PersonalDetails2';
 import PersonalDetails3 from './src/components/PersonalDetails3';
 import DrawerMenu from './src/components/DrawerMenu';
 
-export const BASE_URL = 'https://c0a9-46-119-171-85.ngrok-free.app';
+export const BASE_URL = 'https://5207-178-212-111-254.ngrok-free.app';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -28,10 +28,7 @@ function DrawerNavigator({ token, setToken, navigation }) {
       drawerContent={(props) => <DrawerMenu {...props} setIsLoggedIn={() => setToken(null)} />}
       initialRouteName="Home"
     >
-      <Drawer.Screen
-        name="Home"
-        options={{ headerShown: false }}
-      >
+      <Drawer.Screen name="Home" options={{ headerShown: false }}>
         {(props) => <HomeScreen {...props} token={token} setIsLoggedIn={() => setToken(null)} />}
       </Drawer.Screen>
     </Drawer.Navigator>
@@ -42,6 +39,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(null);
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [isSignupFlow, setIsSignupFlow] = useState(false);
 
   useEffect(() => {
     async function loadFonts() {
@@ -70,16 +68,16 @@ export default function App() {
 
   const navigationRef = React.useRef(null);
 
-  // Reset navigation stack after token is loaded
+  // Reset navigation stack after token is loaded, but only if not in signup flow
   useEffect(() => {
-    if (!loading && navigationRef.current) {
+    if (!loading && navigationRef.current && !isSignupFlow) {
       const initialRoute = token ? 'Drawer' : 'JoinNow';
       navigationRef.current.reset({
         index: 0,
         routes: [{ name: initialRoute }],
       });
     }
-  }, [loading]);
+  }, [loading, token, isSignupFlow]);
 
   if (loading || !fontsLoaded) {
     return (
@@ -99,12 +97,34 @@ export default function App() {
             {(props) => <LoginScreen {...props} setToken={setToken} />}
           </Stack.Screen>
           <Stack.Screen name="Signup" options={{ headerShown: false }}>
-            {(props) => <SignupScreen {...props} setToken={setToken} />}
+            {(props) => (
+              <SignupScreen
+                {...props}
+                setToken={setToken}
+                setIsSignupFlow={setIsSignupFlow}
+              />
+            )}
           </Stack.Screen>
-          <Stack.Screen name="DateOfBirth" component={DateOfBirth} options={{ headerShown: false }} />
-          <Stack.Screen name="PersonalDetails1" component={PersonalDetails1} options={{ headerShown: false }} />
-          <Stack.Screen name="PersonalDetails2" component={PersonalDetails2} options={{ headerShown: false }} />
-          <Stack.Screen name="PersonalDetails3" component={PersonalDetails3} options={{ headerShown: false }} />
+          <Stack.Screen name="DateOfBirth" options={{ headerShown: false }}>
+            {(props) => (
+              <DateOfBirth {...props} setIsSignupFlow={setIsSignupFlow} />
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="PersonalDetails1" options={{ headerShown: false }}>
+            {(props) => (
+              <PersonalDetails1 {...props} setIsSignupFlow={setIsSignupFlow} />
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="PersonalDetails2" options={{ headerShown: false }}>
+            {(props) => (
+              <PersonalDetails2 {...props} setIsSignupFlow={setIsSignupFlow} />
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="PersonalDetails3" options={{ headerShown: false }}>
+            {(props) => (
+              <PersonalDetails3 {...props} setIsSignupFlow={setIsSignupFlow} />
+            )}
+          </Stack.Screen>
           <Stack.Screen name="Drawer" options={{ headerShown: false }}>
             {(props) => (
               <DrawerNavigator

@@ -1,12 +1,14 @@
+// src/components/PersonalDetails1.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, FlatList, Pressable, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import Geocoder from 'react-native-geocoding';
+import { GOOGLE_MAPS_API_KEY } from '@env';
 
 // Initialize Geocoder with your Google Maps API key
-Geocoder.init('fake_api_key');
+Geocoder.init(GOOGLE_MAPS_API_KEY);
 
-export default function PersonalDetails1({ navigation, route }) {
+export default function PersonalDetails1({ navigation, route, setIsSignupFlow }) {
   const { formData = {}, userData, token } = route.params || {};
   const [occupation, setOccupation] = useState(formData.occupation || '');
   const [skillOwned, setSkillOwned] = useState(formData.skill_owned || '');
@@ -45,7 +47,7 @@ export default function PersonalDetails1({ navigation, route }) {
       const updatedFormData = {
         ...formData,
         occupation,
-        skill_owned: 'skillOwned',
+        skill_owned: skillOwned, // Use the actual value from the input
         experience: parseFloat(experience) || 0,
         location,
       };
@@ -53,6 +55,7 @@ export default function PersonalDetails1({ navigation, route }) {
         userData,
         token,
         formData: updatedFormData,
+        setIsSignupFlow,
       });
     }
   };
@@ -77,7 +80,6 @@ export default function PersonalDetails1({ navigation, route }) {
     const { coordinate } = event.nativeEvent;
     setSelectedCoords(coordinate);
 
-    // Convert coordinates to address using Geocoder
     try {
       const response = await Geocoder.from(coordinate.latitude, coordinate.longitude);
       const address = response.results[0].formatted_address;
@@ -106,7 +108,6 @@ export default function PersonalDetails1({ navigation, route }) {
             Provide your personal details to enhance your Skill Swap experience and connect with like-minded individuals
           </Text>
 
-          {/* Occupation */}
           <View style={styles.formField}>
             <Text style={styles.label}>
               Occupation<Text style={styles.required}>*</Text>
@@ -153,7 +154,6 @@ export default function PersonalDetails1({ navigation, route }) {
             {errors.occupation && <Text style={styles.error}>{errors.occupation}</Text>}
           </View>
 
-          {/* Skill Owned */}
           <View style={styles.formField}>
             <Text style={styles.label}>
               Skill Owned<Text style={styles.required}>*</Text>
@@ -168,7 +168,6 @@ export default function PersonalDetails1({ navigation, route }) {
             {errors.skillOwned && <Text style={styles.error}>{errors.skillOwned}</Text>}
           </View>
 
-          {/* Experience */}
           <View style={styles.formField}>
             <Text style={styles.label}>
               Experience<Text style={styles.required}>*</Text>
@@ -193,7 +192,6 @@ export default function PersonalDetails1({ navigation, route }) {
             {errors.experience && <Text style={styles.error}>{errors.experience}</Text>}
           </View>
 
-          {/* Location */}
           <View style={styles.formField}>
             <Text style={styles.label}>
               Location<Text style={styles.required}>*</Text>
@@ -217,7 +215,6 @@ export default function PersonalDetails1({ navigation, route }) {
             {errors.location && <Text style={styles.error}>{errors.location}</Text>}
           </View>
 
-          {/* Map Modal with MapView */}
           <Modal
             animationType="slide"
             transparent={true}
@@ -229,7 +226,7 @@ export default function PersonalDetails1({ navigation, route }) {
                 <MapView
                   style={styles.map}
                   initialRegion={{
-                    latitude: 49.8397, // Updated to Lviv, Ukraine
+                    latitude: 49.8397,
                     longitude: 24.0297,
                     latitudeDelta: 0.0922,
                     longitudeDelta: 0.0421,
@@ -250,10 +247,8 @@ export default function PersonalDetails1({ navigation, route }) {
             </View>
           </Modal>
 
-          {/* Date of Birth Validation */}
           {errors.date_of_birth && <Text style={styles.error}>{errors.date_of_birth}</Text>}
 
-          {/* Navigation */}
           <View style={styles.navigation}>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
               <Text style={styles.backButtonText}>←</Text>
@@ -451,18 +446,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Raleway-Regular',
     color: '#000',
-  },
-  closeButton: {
-    marginTop: 10,
-    padding: 10,
-    backgroundColor: '#3B3227',
-    borderRadius: 50,
-    alignItems: 'center',
-  },
-  closeButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontFamily: 'Raleway-Regular',
   },
   error: {
     color: 'red',

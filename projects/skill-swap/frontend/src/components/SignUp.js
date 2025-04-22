@@ -12,52 +12,75 @@ import {
   StatusBar,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BASE_URL } from '../../App'; 
+import { BASE_URL } from '../../App';
 
-export default function Signup({ navigation, setToken }) {
+export default function Signup({ navigation, setToken, setIsSignupFlow }) {
   const [form, setForm] = useState({
     email: '',
     username: '',
     password: '',
     first_name: '',
     last_name: '',
-    phone_number: ''
+    phone_number: '',
   });
   const [error, setError] = useState('');
 
   const handleSignup = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/users/`, { 
+      console.log('Creating user with:', form);
+      const response = await fetch(`${BASE_URL}/users/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
 
       const responseData = await response.json();
+      console.log('Signup response:', responseData);
 
       if (response.status !== 201) {
         console.log('Signup error response:', responseData);
         throw new Error('Signup failed: ' + JSON.stringify(responseData));
       }
 
-      const accessToken = responseData.token;
       const userId = responseData.id;
 
-      if (!accessToken || !userId) {
-        throw new Error('Token or user ID not returned from server');
+      if (!userId) {
+        throw new Error('User ID not returned from server');
       }
 
-      // Store token in AsyncStorage
+      const tokenResponse = await fetch(`${BASE_URL}/api/token/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: form.email.trim().toLowerCase(),
+          password: form.password,
+        }),
+      });
+
+      const tokenData = await tokenResponse.json();
+      console.log('Token response:', tokenData);
+
+      if (tokenResponse.status !== 200) {
+        throw new Error('Authentication failed: ' + JSON.stringify(tokenData));
+      }
+
+      const accessToken = tokenData.access;
+
+      if (!accessToken) {
+        throw new Error('Access token not returned from server');
+      }
+
       await AsyncStorage.setItem('accessToken', accessToken);
-      
-      // Navigate to DateOfBirth first
+      setToken(accessToken);
+
+      // Set isSignupFlow to true to prevent navigation reset
+      setIsSignupFlow(true);
+
+      // Navigate to DateOfBirth
       navigation.replace('DateOfBirth', {
         userData: { id: userId, ...form },
         token: accessToken,
       });
-
-      // Update token state after navigation
-      setToken(accessToken);
     } catch (err) {
       console.error('Signup error:', err);
       setError('Signup error: ' + err.message);
@@ -94,13 +117,13 @@ export default function Signup({ navigation, setToken }) {
             Create an account and enjoy a world of learning and connections.
           </Text>
 
-          {fields.map(field => (
+          {fields.map((field) => (
             <TextInput
               key={field.key}
               placeholder={field.placeholder}
               secureTextEntry={field.secure}
               value={form[field.key]}
-              onChangeText={text => setForm({ ...form, [field.key]: text })}
+              onChangeText={(text) => setForm({ ...form, [field.key]: text })}
               style={styles.input}
               placeholderTextColor="#666"
             />

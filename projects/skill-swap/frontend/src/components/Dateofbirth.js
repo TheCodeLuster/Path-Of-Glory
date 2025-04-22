@@ -1,4 +1,4 @@
-// src/components/Dateofbirth.js
+// src/components/DateOfBirth.js
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -10,13 +10,13 @@ import {
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BASE_URL } from '../../App'; 
+import { BASE_URL } from '../../App';
 
-export default function DateOfBirth({ navigation, route }) {
+export default function DateOfBirth({ navigation, route, setIsSignupFlow }) {
   const { userData, token } = route.params || {};
-  const [selectedDate, setSelectedDate] = useState('2003-05-06');
+  const [selectedDate, setSelectedDate] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({}); // State to hold form data
+  const [formData, setFormData] = useState({});
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -32,7 +32,7 @@ export default function DateOfBirth({ navigation, route }) {
         }
 
         const response = await fetch(
-          `${BASE_URL}/userprofile/${userData.id}/`, 
+          `${BASE_URL}/userprofile/${userData.id}/`,
           {
             method: 'GET',
             headers: {
@@ -69,6 +69,11 @@ export default function DateOfBirth({ navigation, route }) {
       return;
     }
 
+    if (!selectedDate) {
+      Alert.alert('Error', 'Please select a date of birth.');
+      return;
+    }
+
     setIsLoading(true);
 
     const date = new Date(selectedDate);
@@ -80,76 +85,15 @@ export default function DateOfBirth({ navigation, route }) {
       return;
     }
 
-    try {
-      const accessToken = token || (await AsyncStorage.getItem('accessToken'));
-      if (!accessToken) {
-        throw new Error('No access token available');
-      }
+    const updatedFormData = { ...formData, date_of_birth: selectedDate };
+    navigation.navigate('PersonalDetails1', {
+      userData,
+      token,
+      formData: updatedFormData,
+      setIsSignupFlow,
+    });
 
-      let method = 'POST';
-      let url = `${BASE_URL}/userprofile/`;  
-      const checkResponse = await fetch(
-        `${BASE_URL}/userprofile/${userData.id}/`, 
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-
-      if (checkResponse.status === 200) {
-        method = 'PATCH';
-        url = `${BASE_URL}/userprofile/${userData.id}/`; 
-      }
-
-      const response = await fetch(url, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(
-          method === 'POST'
-            ? {
-                user: userData.id,
-                date_of_birth: selectedDate,
-                occupation: 'Teacher',
-                skill_owned: 'Teaching',
-                experience: 0,
-                location: 'Unknown',
-                work_link: 'https://example.com',
-                description: 'New user',
-                achievements: 'None',
-              }
-            : { date_of_birth: selectedDate }
-        ),
-      });
-
-      if (response.status === 201 || response.status === 200) {
-        // Update formData with date_of_birth
-        const updatedFormData = { ...formData, date_of_birth: selectedDate };
-        // Navigate to PersonalDetails1 with updated formData
-        navigation.navigate('PersonalDetails1', {
-          userData,
-          token,
-          formData: updatedFormData,
-        });
-      } else {
-        const errorData = await response.json();
-        console.error('Error saving date of birth:', errorData);
-        const errorMessage = Object.entries(errorData)
-          .map(([field, errors]) => `${field}: ${errors.join(', ')}`)
-          .join('\n');
-        Alert.alert('Error', errorMessage || 'Failed to save date of birth');
-      }
-    } catch (error) {
-      console.error('Network error:', error);
-      Alert.alert('Error', 'Network error occurred: ' + error.message);
-    } finally {
-      setIsLoading(false);
-    }
+    setIsLoading(false);
   };
 
   React.useLayoutEffect(() => {

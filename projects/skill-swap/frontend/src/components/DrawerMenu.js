@@ -65,13 +65,13 @@ export default function DrawerMenu(props) {
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Text style={styles.footerText}>PRIVACY POLICY • TERMS OF SERVICE</Text>
+        <Text style={styles.footerText}>Privacy Policy • Terms of Service</Text>
         <TouchableOpacity style={styles.footerItem}>
-          <Image source={helpIcon} style={styles.menuIcon} />
+          <Image source={helpIcon} style={styles.footerIcon} />
           <Text style={styles.footerText}>Help and feedback</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.footerItem} onPress={handleLogout}>
-          <Image source={logoutIcon} style={styles.menuIcon} />
+          <Image source={logoutIcon} style={styles.footerIcon} />
           <Text style={styles.footerText}>Log out</Text>
         </TouchableOpacity>
       </View>
@@ -87,26 +87,28 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 15,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    marginTop: 20, // Adjusted to match the spacing in the photo
   },
   backIcon: {
-    width: 24,
-    height: 24,
-    marginRight: 10,
+    width: 33, // Slightly smaller to match the photo
+    height: 30,
+    marginRight: 15,
   },
   title: {
-    fontSize: 24,
+    fontSize: 20, // Reduced from 24 to match the photo
     fontWeight: 'bold',
     fontFamily: 'Raleway-bold',
     color: '#1A1A1A',
   },
   menuItems: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 20,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 15,
+    paddingVertical: 15, // Reduced from 15 to match the compact spacing in the photo
   },
   menuIcon: {
     width: 24,
@@ -128,17 +130,24 @@ const styles = StyleSheet.create({
   footer: {
     borderTopWidth: 1,
     borderTopColor: '#E0E0E0',
-    padding: 15,
-    marginTop: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    marginTop: 300, // Push the footer to the bottom of the container
   },
   footerItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
   },
+  footerIcon: {
+    width: 20, // Slightly smaller to match the photo
+    height: 20,
+    marginRight: 15,
+  },
   footerText: {
     fontSize: 14,
     fontFamily: 'Raleway-regular',
-    color: '#1A1A1A',
+    color: '#666', 
+    textTransform: 'capitalize',
   },
 });

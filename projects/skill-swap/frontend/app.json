@@ -1,7 +1,4 @@
 {
-  "plugins": [
-    "expo-font"
-  ],
   "expo": {
     "name": "SkillSwap",
     "slug": "skillswap",
@@ -40,6 +37,9 @@
       "eas": {
         "projectId": "981f672f-46cb-42eb-a04a-e3fbeff31b0b"
       }
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
