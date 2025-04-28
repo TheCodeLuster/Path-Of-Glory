@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ActivityIndicator, View, StatusBar } from 'react-native';
+import { ActivityIndicator, View, StatusBar, Dimensions, Platform } from 'react-native';
 import * as Font from 'expo-font';
 
 import LoginScreen from './src/components/Login';
@@ -17,19 +17,53 @@ import PersonalDetails2 from './src/components/PersonalDetails2';
 import PersonalDetails3 from './src/components/PersonalDetails3';
 import DrawerMenu from './src/components/DrawerMenu';
 
-export const BASE_URL = 'https://5207-178-212-111-254.ngrok-free.app';
+export const BASE_URL = 'https://4309-46-119-171-85.ngrok-free.app';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
-function DrawerNavigator({ token, setToken, navigation }) {
+function DrawerNavigator({ token, setToken }) {
   return (
     <Drawer.Navigator
-      drawerContent={(props) => <DrawerMenu {...props} setIsLoggedIn={() => setToken(null)} />}
+      drawerContent={props => (
+        <DrawerMenu {...props} setIsLoggedIn={() => setToken(null)} />
+      )}
       initialRouteName="Home"
+      screenOptions={{
+        drawerType: 'front',
+
+        drawerPosition: 'left',
+
+        drawerStyle: {
+          width: Dimensions.get('window').width * 0.6,
+          backgroundColor: 'transparent',
+        },
+        drawerContentStyle: {
+          flex: 1,
+          backgroundColor: '#B89653',
+          borderTopRightRadius: 20,
+          borderBottomRightRadius: 20,
+          overflow: 'hidden',
+          ...(Platform.OS === 'android'
+            ? { elevation: 5 }
+            : {
+                shadowColor: '#000',
+                shadowOffset: { width: 2, height: 0 },
+                shadowOpacity: 0.2,
+                shadowRadius: 4,
+              }),
+        },
+        overlayColor: 'rgba(0,0,0,0.3)',
+      }}
     >
       <Drawer.Screen name="Home" options={{ headerShown: false }}>
-        {(props) => <HomeScreen {...props} token={token} setIsLoggedIn={() => setToken(null)} />}
+        {props => (
+          <HomeScreen
+            {...props}
+            token={token}
+            setIsLoggedIn={() => setToken(null)}
+          />
+        )}
       </Drawer.Screen>
     </Drawer.Navigator>
   );

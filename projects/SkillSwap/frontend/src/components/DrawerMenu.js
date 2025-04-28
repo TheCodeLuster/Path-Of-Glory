@@ -1,7 +1,7 @@
 // src/components/DrawerMenu.js
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { DrawerContentScrollView } from '@react-navigation/drawer';
+import { SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const personalDetailsIcon = require('../../images/profile.png');
@@ -29,7 +29,7 @@ export default function DrawerMenu(props) {
   };
 
   return (
-    <DrawerContentScrollView {...props} style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* Header with Back Arrow */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.closeDrawer()}>
@@ -38,25 +38,36 @@ export default function DrawerMenu(props) {
         <Text style={styles.title}>Menu</Text>
       </View>
 
+      {/* Divider under “Menu” */}
+      <View style={styles.divider} />
+
       {/* Menu Items */}
       <View style={styles.menuItems}>
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('PersonalDetails')}>
           <Image source={personalDetailsIcon} style={styles.menuIcon} />
           <Text style={styles.menuText}>Personal Details</Text>
         </TouchableOpacity>
+        <View style={styles.divider} />
+
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Community')}>
           <Image source={communityIcon} style={styles.menuIcon} />
           <Text style={styles.menuText}>Community</Text>
         </TouchableOpacity>
+        <View style={styles.divider} />
+
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Premium')}>
           <Image source={premiumIcon} style={styles.menuIcon} />
           <Text style={styles.menuText}>Premium</Text>
         </TouchableOpacity>
+        <View style={styles.divider} />
+
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('TimeTable')}>
           <Image source={timetableIcon} style={styles.menuIcon} />
           <Text style={styles.menuText}>Time Table</Text>
           <View style={styles.selectedDot} />
         </TouchableOpacity>
+        <View style={styles.divider} />
+
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('History')}>
           <Image source={historyIcon} style={styles.menuIcon} />
           <Text style={styles.menuText}>History</Text>
@@ -65,50 +76,61 @@ export default function DrawerMenu(props) {
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Text style={styles.footerText}>Privacy Policy • Terms of Service</Text>
-        <TouchableOpacity style={styles.footerItem}>
-          <Image source={helpIcon} style={styles.footerIcon} />
-          <Text style={styles.footerText}>Help and feedback</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem} onPress={handleLogout}>
-          <Image source={logoutIcon} style={styles.footerIcon} />
-          <Text style={styles.footerText}>Log out</Text>
-        </TouchableOpacity>
+        <View style={styles.footerPolicy}>
+          <Text style={styles.footerText}>
+            Privacy Policy • Terms of Service
+          </Text>
+        </View>
+
+        <View style={styles.footerDivider} />
+
+        <View style={styles.footerActions}>
+          <TouchableOpacity style={styles.footerItem}>
+            <Image source={helpIcon} style={styles.footerIcon} />
+            <Text style={styles.footerText1}>Help and feedback</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.footerItem} onPress={handleLogout}>
+            <Image source={logoutIcon} style={styles.footerIcon} />
+            <Text style={styles.footerText1}>Log out</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </DrawerContentScrollView>
+      </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#fff',
+    borderTopRightRadius: 80,
+    borderBottomRightRadius: 60
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    marginTop: 20, // Adjusted to match the spacing in the photo
+    marginTop: 50,
   },
   backIcon: {
-    width: 33, // Slightly smaller to match the photo
+    width: 33, 
     height: 30,
     marginRight: 15,
   },
   title: {
-    fontSize: 20, // Reduced from 24 to match the photo
+    fontSize: 20,
     fontWeight: 'bold',
     fontFamily: 'Raleway-bold',
     color: '#1A1A1A',
   },
   menuItems: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 0,
   },
   menuItem: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 15, // Reduced from 15 to match the compact spacing in the photo
+    paddingVertical: 15, 
+    paddingLeft: 20,
   },
   menuIcon: {
     width: 24,
@@ -128,11 +150,24 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   footer: {
-    borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
     paddingHorizontal: 20,
     paddingVertical: 15,
-    marginTop: 300, // Push the footer to the bottom of the container
+    backgroundColor: '#FFFFFF',
+    marginTop: 200
+  },
+  footerPolicy: {
+    paddingBottom: 10,
+  },
+  footerDivider: {
+    height: 2,
+    backgroundColor: '#000',
+    marginBottom: 10,
+    width: '119.2%',         
+    alignSelf: 'stretch',
+    marginHorizontal: -20, 
+  },
+  footerActions: {
+    // empty on purpose (actions stack naturally)
   },
   footerItem: {
     flexDirection: 'row',
@@ -140,14 +175,23 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   footerIcon: {
-    width: 20, // Slightly smaller to match the photo
+    width: 20,
     height: 20,
     marginRight: 15,
   },
   footerText: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: 'Raleway-regular',
-    color: '#666', 
+    color: '#000',
     textTransform: 'capitalize',
   },
+  divider: {
+    height: 1,
+    backgroundColor: '#000',
+    marginVertical: 7,  // space above/below the line
+    height: 2,
+  },
+  footerText1: {
+    fontSize: 14
+  }
 });
