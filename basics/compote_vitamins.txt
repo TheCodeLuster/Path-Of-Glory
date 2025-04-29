@@ -1,0 +1,12 @@
+Red Compote
+  Vitamins: B, C, E
+
+Black Compote
+  Vitamins: A, B, C
+
+Blue Compote
+  Vitamins: A, C, E
+
+Green Compote
+  Vitamins: C
+

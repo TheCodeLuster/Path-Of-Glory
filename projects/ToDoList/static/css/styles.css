@@ -1,0 +1,231 @@
+/* styles.css */
+@font-face {
+  font-family: 'Oswald';
+  src: url('/static/assets/fonts/Oswald-Regular.ttf') format('truetype');
+  font-weight: 400; /* Regular */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Oswald';
+  src: url('/static/assets/fonts/Oswald-Medium.ttf') format('truetype');
+  font-weight: 500; /* Medium */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Oswald';
+  src: url('/static/assets/fonts/Oswald-Bold.ttf') format('truetype');
+  font-weight: 700; /* Bold */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Source Code Pro';
+  src: url('/static/assets/fonts/SourceCodePro-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Source Code Pro';
+  src: url('/static/assets/fonts/SourceCodePro-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Source Code Pro';
+  src: url('/static/assets/fonts/SourceCodePro-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+.code-snippet {
+  font-family: 'Source Code Pro', monospace;
+  font-weight: 400;
+}
+
+body {
+  margin: 0;
+  padding: 2rem;
+  background:
+    radial-gradient(
+      circle at 50% 0,
+      rgba(33, 103, 195, 0.6), /* medium-light blue (#2167C3) with 60% opacity */
+      rgba(33, 103, 195, 0) 70.71% /* transparent medium-light blue */
+    ),
+    radial-gradient(
+      circle at 6.7% 75%,
+      rgba(26, 82, 154, 0.6), /* slightly darker blue (#1A529A) with 60% opacity */
+      rgba(26, 82, 154, 0) 70.71% /* transparent slightly darker blue */
+    ),
+    radial-gradient(
+      circle at 93.3% 75%,
+      rgba(33, 103, 195, 0.6), /* medium-light blue (#2167C3) with 60% opacity */
+      rgba(33, 103, 195, 0) 70.71% /* transparent medium-light blue */
+    ),
+    #2167C3; /* medium-light blue base color */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden; /* ⛔ disable scroll */
+}
+
+/* Контейнер сторінки */
+.page-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1400px;
+}
+
+/* Ліва секція: текст по центру */
+.intro-section {
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  color: #ffffff;
+  margin-bottom: 250px;
+}
+
+.main-title {
+  font-size: 4.6rem;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  margin: 0;
+  margin-top: 50px;
+  margin-left: 70px;
+  white-space: nowrap; /* 👈 prevent text wrapping */
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 400; 
+  margin: 0.5rem 0 0;
+  opacity: 0.75;
+  margin-left: 10px;
+  margin-left: 150px;
+}
+
+.pill-container {
+  display: flex;
+  align-items: stretch;    /* діти тягнуться на всю висоту батька */
+  width: 1000px;
+  height: 550px;
+  overflow: hidden;
+  border-radius: 275px / 50%;
+  background: transparent; /* already transparent to show body gradient */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transform: translateX(100px);
+  margin-bottom: 60px;
+}
+
+/* Зменшуємо картинку до 85% висоти і центруємо vertically */
+.image-section {
+  width: 45%;
+  display: flex;
+  align-items: center;     /* центр по вертикалі */
+  justify-content: center;
+  overflow: hidden;
+  background: #205cab; /* slightly darker blue */
+}
+
+.image-section img {
+  width: 100%;
+  height: 93%;             /* ті ж 85%, що й білий контейнер */
+  object-fit: cover;
+  border-radius: 3rem;     /* така сама округлість, як у білого блоку */
+}
+
+/* Форма теж 85% і центрована */
+.form-section {
+  width: 55%;
+  display: flex;
+  align-items: center;     /* вертикальне центрування */
+  justify-content: center;
+  background: #205cab; /* slightly darker blue */
+}
+
+/* Form container with a slightly lighter shade */
+.form-container {
+  width: 75%;
+  height: 93%;             /* 85% від 550px */
+  background: #2672c8;     /* lighter blue to match the theme */
+  border-radius: 3rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  padding: 2rem;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+/* Заголовок і опис у формі */
+.form-title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 500;
+  color: #ffffff; /* white text for contrast */
+  margin-top: 83px;
+  margin-right: 55px;
+}
+
+.form-description {
+  margin: 1rem 0 1.5rem;
+  font-size: 0.95rem;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 200;
+  color: #D1E0FF; /* lighter blue for contrast */
+  line-height: 1.4;
+  text-align: left; 
+}
+
+.get-started-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FFC107;
+  color: #000;
+  text-decoration: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 200;
+  font-size: 1rem;
+  width: 200px;
+  height: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-left: 5px;
+}
+
+.get-started-button:hover {
+  background-color: #FFB300;
+}
+
+/* Лінк для входу */
+.sign-in-text {
+  font-size: 0.875rem;
+  color: #D1E0FF; /* lighter blue for contrast */
+  margin-right: 24px;
+  font-family: 'Oswald';
+  font-weight: 200;
+}
+
+.sign-in-link {
+  color: #D1E0FF; /* lighter blue for contrast */
+  text-decoration: none;
+}
+
+.sign-in-link:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ToDo List</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Ліва секція: Центровані заголовок і сабтайтл -->
+    <div class="intro-section">
+      <h1 class="main-title">ToDo List</h1>
+      <p class="subtitle">ToDo Py</p>
+    </div>
+
+    <!-- Права “pill”–секція -->
+    <div class="pill-container">
+      <!-- Картинка залишається за старим URL -->
+      <div class="image-section">
+        <img
+          src="{{ url_for('static', filename='bck2.png') }}"
+          alt="To do list"
+        />
+      </div>
+      <!-- Форма з заголовком, описом, кнопкою і лінком -->
+      <div class="form-section">
+        <div class="form-container">
+          <h2 class="form-title">ToDo Py</h2>
+          <p class="form-description">
+            Stay Organized, Get Things Done: Your <br>Ultimate To-Do List App.<br>
+            A to-do list app is a digital task management<br> 
+            tool designed to help users organize and<br> 
+            prioritize their daily activities and responsibilities.
+          </p>
+            <a href="{{ url_for('signUp') }}" class="get-started-button">Get Started</a>
+          <p class="sign-in-text">
+            Already have an account? <a href="#" class="sign-in-link">Sign In</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

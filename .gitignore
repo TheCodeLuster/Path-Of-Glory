@@ -1,1 +1,68 @@
 .DS_Store
+.env
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+.venv/
+env/
+ENV/
+
+# Environment variable files
+.env
+.env.*
+
+# Flask instance folder
+instance/
+
+# Logs and databases
+*.log
+*.sqlite3
+*.db
+
+# Static asset folders you don't want to track
+/static/assets/fonts/
+*.ttf
+*.otf
+*.woff
+*.woff2
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE/editor settings
+.vscode/
+.idea/
+
+# Git-related
+.gitignore
+
+# Virtual environments
+venv/
+.env/
+.venv/
+
+# Flask instance and cached data
+instance/
+__pycache__/
+*.pyc
+
+# Node or frontend assets (if any)
+node_modules/
+
+# Static assets
+*.ttf
+*.otf
+*.woff
+*.woff2
+*.mp4
+*.png
+*.jpg
+*.jpeg
+*.webp

@@ -1,0 +1,12 @@
+Red Compote
+  Berries: Strawberry, Raspberry
+
+Black Compote
+  Berries: Blackberry
+
+Blue Compote
+  Berries: Blueberry
+
+Green Compote
+  Berries: Gooseberry
+
